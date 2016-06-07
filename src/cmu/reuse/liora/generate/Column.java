@@ -1,5 +1,6 @@
 package cmu.reuse.liora.generate;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,6 +11,7 @@ public class Column {
 	boolean percentages; //can use
 	List<Column> dependencies; //can use
 	String[] values; //can use
+	File file; //which file is in
 	
 	public Column() {
 		dependencies = new ArrayList<>();
@@ -19,6 +21,6 @@ public class Column {
 	public boolean equals(Object obj) {
 		if (obj == null) return false;
 		Column input = (Column) obj;
-		return (input.datatype.equals(datatype));
+		return (input.datatype.equals(datatype) && input.file.equals(file));
 	}
  }
