@@ -11,28 +11,31 @@ import java.util.UUID;
 
 public class Generator {
 	
-	//doing zip code based of population as frequency - population_data.csv
-	//city and state by zip code - zip.csv
-	//100,000 people
+	//override menu calls - in automenu - change back for user interaction!!
 	
-	//override menu calls
-	//see time difference - whole thing, 10 lines - 1 sec
+	//see time difference...
 	//add test package - performance test, test prob distr match
-	//javadoc, test
+
+	//tests - probs_dep etc., javadoc
 	
 	public static void main(String[] args) {
+		long first = System.currentTimeMillis();
 		List<Individual> rows = generate();
+		long second = System.currentTimeMillis();
 		for (Individual i : rows) { //to test
+			System.out.println("next person");
 			Map<Column, String> values = i.getValues();
 			for (Column c : values.keySet()) {
 				System.out.println("datatype: " + c.datatype + " value: " + values.get(c));
 			}
 		}
 		//now have rows to put in database!
+		long finalTime = second - first;
+		System.out.println("final time in millis: " + finalTime);
 	}
 	
 	public static List<Individual> generate() {
-		Menu menu = new Menu();
+		Menu menu = new Menu(); //AutoMenu to automate
 		List<File> files = menu.getAllFiles(); //get all relevant files from user		
 		
 		List<Column> columns = new ArrayList<>();
@@ -128,7 +131,7 @@ public class Generator {
 						indexToValue.put(index, currentValues.get(currentCol));
 					}
 				}
-				String value = personReader.findStaticValue(indexToValue, columnIndex);
+				String value = personReader.findStaticValue(indexToValue, columnIndex); //index to val at least here fix
 				person.setValue(column, value);
 				personReader.close();
 				}				
