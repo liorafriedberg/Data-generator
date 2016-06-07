@@ -11,6 +11,15 @@ import java.util.UUID;
 
 public class Generator {
 	
+	//doing zip code based of population as frequency - population_data.csv
+	//city and state by zip code - zip.csv
+	//100,000 people
+	
+	//override menu calls
+	//see time difference - whole thing, 10 lines - 1 sec
+	//add test package - performance test, test prob distr match
+	//javadoc, test
+	
 	public static void main(String[] args) {
 		List<Individual> rows = generate();
 		for (Individual i : rows) { //to test
@@ -18,7 +27,7 @@ public class Generator {
 			for (Column c : values.keySet()) {
 				System.out.println("datatype: " + c.datatype + " value: " + values.get(c));
 			}
-		}		
+		}
 		//now have rows to put in database!
 	}
 	
