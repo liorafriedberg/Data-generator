@@ -64,6 +64,12 @@ public class CSVReader {
 		}
 	}
 	
+	/**
+	 * description
+	 * @param indexToValue - desc
+	 * @param indexToPotential - desc
+	 * see tags
+	 */
 	public void parseProbsDep(Map<Integer, String> indexToValue, Map<Integer, Column> indexToPotential) {
 		probabilities.clear(); 
 		bounds.clear();
@@ -79,7 +85,7 @@ public class CSVReader {
 			}
 			if (found) {
 				for (Integer index : indexToPotential.keySet()) {
-					String label = indexToPotential.get(index).label;
+					String label = indexToPotential.get(index).label; //matching label
 					double prob = Double.parseDouble(parts[index]); //probabilities directly in the row
 					probabilities.put(label, prob);
 				}
