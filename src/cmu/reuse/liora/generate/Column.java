@@ -9,9 +9,16 @@ public class Column {
 	String label;
 	boolean percentages; //can use
 	List<Column> dependencies; //can use
-	String[] values;
+	String[] values; //can use
 	
 	public Column() {
 		dependencies = new ArrayList<>();
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) return false;
+		Column input = (Column) obj;
+		return (input.datatype.equals(datatype));
 	}
  }
