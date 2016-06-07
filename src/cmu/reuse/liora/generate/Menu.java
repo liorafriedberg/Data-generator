@@ -49,7 +49,6 @@ public class Menu {
 			input = userInput.next();
 			if (input != null) {
 				for (Column column : columns) {
-					System.out.println("column: " + column.datatype);
 					if (column.datatype.equals(input)) {
 						probColumn = column;
 						wait = false;
