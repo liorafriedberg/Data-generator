@@ -16,8 +16,10 @@ public class CSVReader {
 	Map<String, Double> probabilities; //to store parsed probabilities
 	Map<String, Map<Double, Double>> bounds; //to store values for the "dice roll"
 	List<Column> header;
+	File file;
 	
 	public CSVReader(File file) {	
+		this.file = file;
 		try {
 			sc = new Scanner(file);
 		} catch (FileNotFoundException e) {
@@ -95,7 +97,7 @@ public class CSVReader {
 		}
 	}
 	
-	public String findStaticValue(Map<Integer, String> indexToValue, int valIndex) {
+	public String findStaticValue(Map<Integer, String> indexToValue, int valIndex) {	
 		String value = null;		
 		while (sc.hasNextLine()) {
 			String line = sc.nextLine();
@@ -107,7 +109,10 @@ public class CSVReader {
 					break;
 				}
 			}
-			if (found) {
+			if (found) {	
+				for (int i = 0; i < parts.length; i++) {
+				System.out.println(parts[i]);
+				}
 				value = parts[valIndex]; //take value directly from file
 				break;
 			}
@@ -150,11 +155,14 @@ public class CSVReader {
 	
 	public String calculate() { //roll the dice - the simulation
 		double random = Math.random();
+		//System.out.println("random: " + random);
 		for (String s : bounds.keySet()) {
 			Map<Double, Double> compare = bounds.get(s);
 			for (Double lower : compare.keySet()) {
-				Double higher = compare.get(lower); //range for this value
+				Double higher = compare.get(lower); //range for this value				
 				if (random > lower && random <= higher) { //depending on range random num falls into
+				//	System.out.println("lower: " + lower + " higher: " + higher + "string: " + s);
+					//STRING NOT THERE AND BOUNDS ARE WEIRD
 					return s; //return corresp data value
 				}
 			}
@@ -181,6 +189,7 @@ public class CSVReader {
 		for (int i = 0; i < columnStrings.length; i++) {
 			Column c = new Column();
 			c.datatype = columnStrings[i];
+			c.file = file;
 			columns.add(c);	
 		}
 		return columns;
