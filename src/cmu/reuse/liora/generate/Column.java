@@ -18,6 +18,10 @@ public class Column {
 	public Column() {
 	}
 	
+	public Column(String datatype) {
+		this.datatype = datatype;
+	}
+	
 	/* (non-Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
