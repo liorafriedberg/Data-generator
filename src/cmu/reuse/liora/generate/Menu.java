@@ -92,7 +92,7 @@ public class Menu {
 					String[] tempColArr = input.split(",");
 					for (int i = 0; i < tempColArr.length; i++) {
 						String columnStr = tempColArr[i];
-						for (Column column : currentColumns) {
+						for (Column column : currentColumns) { //could clean up, add error check 
 							if (column.datatype.equals(columnStr)) {
 								finalColumns.add(column);
 								break;
@@ -263,7 +263,7 @@ public class Menu {
 				for (int i = 0; i < parts.length; i++) {
 					String arrColumn = parts[i];
 					for (Column col : columns) {
-						if (col.datatype.equals(arrColumn)) { //could clean up
+						if (col.datatype.equals(arrColumn)) {
 							range.add(col);
 							break;
 						}
