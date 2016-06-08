@@ -12,8 +12,8 @@ import java.util.Set;
 import java.util.Map.Entry;
 
 /**
- * @author liorafriedberg
  * Parses and reasons over CSV files
+ * @author liorafriedberg
  */
 public class CSVReader {
 	Scanner sc;
@@ -200,7 +200,6 @@ public class CSVReader {
 	 */
 	public String calculate() { //roll the dice - the simulation
 		double random = Math.random();
-		//System.out.println("random: " + random);
 		for (String s : bounds.keySet()) {
 			Map<Double, Double> compare = bounds.get(s);
 			for (Double lower : compare.keySet()) {
