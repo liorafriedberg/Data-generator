@@ -10,8 +10,8 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * @author liorafriedberg
  * Generates synthetic individual-level data from aggregate data
+ * @author liorafriedberg
  */
 
 public class Generator {
@@ -20,14 +20,14 @@ public class Generator {
 	
 	
 	/* todo:
-	 * javadoc - check other tags - push
+	 * javadoc - push - desc comes before tags
 	 * tests (performance numbers, functionality)
 	 * shorten to just do datatype, etc for ex: getprobcolumn in menu
 	 */
 	
 	/**
+	 * starts generation
 	 * @param args
-	 * calls generate
 	 */
 	public static void main(String[] args) {
 		long first = System.currentTimeMillis();
