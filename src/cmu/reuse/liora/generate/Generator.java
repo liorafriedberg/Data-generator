@@ -19,8 +19,7 @@ public class Generator {
 	//**note to reader: override menu calls in automenu, change back to menu for user interaction**
 	
 	
-	/* todo:
-	 * javadoc - push - desc comes before tags
+	/* TODO:
 	 * tests (performance numbers, functionality)
 	 * shorten to just do datatype, etc for ex: getprobcolumn in menu
 	 */
