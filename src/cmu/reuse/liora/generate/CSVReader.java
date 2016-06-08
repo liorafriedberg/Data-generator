@@ -11,15 +11,34 @@ import java.util.Scanner;
 import java.util.Set;
 import java.util.Map.Entry;
 
+/**
+ * @author liorafriedberg
+ * Parses and reasons over CSV files
+ */
 public class CSVReader {
 	Scanner sc;
-	Map<String, Double> probabilities; //to store parsed probabilities
-	Map<String, Map<Double, Double>> bounds; //to store values for the "dice roll"
-	List<Column> header;
-	File file;
 	
-	public CSVReader(File file) {	
-		this.file = file;
+	/**
+	 * to store parsed probabilities
+	 */
+	Map<String, Double> probabilities; 
+	/**
+	 * to store values for the "dice roll"
+	 */
+	Map<String, Map<Double, Double>> bounds; 
+	/**
+	 * all columns parsed from header
+	 */
+	List<Column> header;
+	/**
+	 * columns mapped to their indices in file
+	 */
+	Map<Column, Integer> indices;
+	
+	/**
+	 * @param file		CSV file with agg data
+	 */
+	public CSVReader(File file) {
 		try {
 			sc = new Scanner(file);
 		} catch (FileNotFoundException e) {
@@ -27,13 +46,22 @@ public class CSVReader {
 		}
 		probabilities = new HashMap<>();
 		bounds = new HashMap<>();
-		header = getColumns();
+		indices = new HashMap<>();
+		header = getColumns();	
 	}
 	
+	/**
+	 * closes reader
+	 */
 	public void close() {
 		sc.close();
 	}
 	
+	/**
+	 * parse frequencies into percentages from file based on row
+	 * @param indexToValue		indices to values to match on
+	 * @param indexToPotential	indices to columns for the distribution
+	 */
 	public void parseFreqsDep(Map<Integer, String> indexToValue, Map<Integer, Column> indexToPotential) {		
 		probabilities.clear();
 		bounds.clear();
@@ -67,10 +95,9 @@ public class CSVReader {
 	}
 	
 	/**
-	 * description
-	 * @param indexToValue - desc
-	 * @param indexToPotential - desc
-	 * see tags
+	 * parse probabilities from file based on row
+	 * @param indexToValue		indices to values to match on
+	 * @param indexToPotential		indices to columns for the distribution
 	 */
 	public void parseProbsDep(Map<Integer, String> indexToValue, Map<Integer, Column> indexToPotential) {
 		probabilities.clear(); 
@@ -97,6 +124,12 @@ public class CSVReader {
 		}
 	}
 	
+	/**
+	 * parse static value from file based on row
+	 * @param indexToValue		indices to values to match on
+	 * @param valIndex			index of the column with the value to return
+	 * @return					value, based off dependencies
+	 */
 	public String findStaticValue(Map<Integer, String> indexToValue, int valIndex) {	
 		String value = null;		
 		while (sc.hasNextLine()) {
@@ -110,9 +143,6 @@ public class CSVReader {
 				}
 			}
 			if (found) {	
-				for (int i = 0; i < parts.length; i++) {
-				System.out.println(parts[i]);
-				}
 				value = parts[valIndex]; //take value directly from file
 				break;
 			}
@@ -120,6 +150,12 @@ public class CSVReader {
 		return value;
 	}
 	
+	/**
+	 * parse probabilities from file
+	 * @param values					column with the possible data values
+	 * @param probs						column with the percentages for the values
+	 * @throws NumberFormatException	On parsing Double from String
+	 */
 	public void parseProbs(Column values, Column probs) throws NumberFormatException {
 		probabilities.clear();
 		bounds.clear();
@@ -133,6 +169,12 @@ public class CSVReader {
 		bound();		
 	}
 	
+	/**
+	 * parse frequencies into percentages from file
+	 * @param values					column with the possible data values
+	 * @param probs						column with the frequencies for the values
+	 * @throws NumberFormatException	On parsing Double from String
+	 */
 	public void parseFreqs(Column values, Column probs) throws NumberFormatException {
 		probabilities.clear();
 		bounds.clear(); 
@@ -153,6 +195,9 @@ public class CSVReader {
 		bound();		
 	}
 	
+	/**
+	 * @return	data value from dice roll based on the parsed probability distribution
+	 */
 	public String calculate() { //roll the dice - the simulation
 		double random = Math.random();
 		//System.out.println("random: " + random);
@@ -161,8 +206,6 @@ public class CSVReader {
 			for (Double lower : compare.keySet()) {
 				Double higher = compare.get(lower); //range for this value				
 				if (random > lower && random <= higher) { //depending on range random num falls into
-				//	System.out.println("lower: " + lower + " higher: " + higher + "string: " + s);
-					//STRING NOT THERE AND BOUNDS ARE WEIRD
 					return s; //return corresp data value
 				}
 			}
@@ -171,6 +214,9 @@ public class CSVReader {
 		return null;
 	}
 	
+	/**
+	 * set ranges on the data values for the dice roll
+	 */
 	public void bound() {
 		double upperBound = 0.0;
 		for (String s : probabilities.keySet()) {
@@ -182,6 +228,10 @@ public class CSVReader {
 		}
 	}		
 	
+	/**
+	 * also fills in a map of column to index
+	 * @return	all columns in the file
+	 */
 	public List<Column> getColumns() {
 		List<Column> columns = new ArrayList<>();
 		String firstLine = sc.nextLine(); //new reader every time call this, so first line
@@ -189,12 +239,15 @@ public class CSVReader {
 		for (int i = 0; i < columnStrings.length; i++) {
 			Column c = new Column();
 			c.datatype = columnStrings[i];
-			c.file = file;
 			columns.add(c);	
+			indices.put(c, i);
 		}
 		return columns;
 	}
 	
+	/**
+	 * @return	number of lines in file
+	 */
 	public int countLines() { 
 		int count = 0;
 		while (sc.hasNextLine()) {
@@ -204,17 +257,19 @@ public class CSVReader {
 		return count;
 	}
 	
-	public int getColumnIndex(Column column) {
-		int index = 0;
-		for (Column col : header) {
-			if (col.datatype.equals(column.datatype)) {
-				index = header.indexOf(col); //spot in list should correspond to this index
-				break;
-			}
-		}
-		return index;
+	/**
+	 * @param column	
+	 * @return		index of column
+	 */
+	public int getColumnIndex(Column column) { 
+		return indices.get(column);
 	}
 	
+	/**
+	 * @param column	column of data looking for
+	 * @param count		number of lines in file
+	 * @return			random value in column
+	 */
 	public String staticRead(Column column, int count) {
 		String value = null;
 		int randomInt = ThreadLocalRandom.current().nextInt(2, count + 1); //random line number
