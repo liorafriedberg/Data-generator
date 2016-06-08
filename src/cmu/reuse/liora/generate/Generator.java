@@ -16,12 +16,10 @@ import java.util.UUID;
 
 public class Generator {
 	
-	//**note to reader: override menu calls in automenu, change back to menu for user interaction**
-	
+	//**note to reader: override menu calls in automenu, change back to menu for user interaction**	
 	
 	/* TODO:
 	 * tests (performance numbers, functionality)
-	 * shorten to just do datatype, etc for ex: getprobcolumn in menu
 	 */
 	
 	/**
@@ -74,10 +72,11 @@ public class Generator {
 		
 			if (source.equals(Source.PROBS)) { //done with probs
 				File file = menu.getFile();
-				Column probColumn = menu.getProbabilityColumn(allColumns);
+				CSVReader reader = new CSVReader(file);
+				Column probColumn = menu.getProbabilityColumn(reader.header);
 				//value column is column, probColumn is frequency column
 				int format = menu.getDataFormat(); //1 is percentage 2 is freq
-				CSVReader reader = new CSVReader(file);
+				
 				if (format == 1) {
 					reader.parseProbs(column, probColumn);
 				}
