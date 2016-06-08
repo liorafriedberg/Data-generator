@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @author liorafriedberg
  * represents a person with specific values for the datatypes, corresponds to a row in the database
+ * @author liorafriedberg
  */
 public class Individual {
 	
