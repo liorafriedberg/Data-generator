@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author liorafriedberg
  * represents a column in the database, a datatype
+ * @author liorafriedberg
  */
 public class Column { 
 	/**
@@ -20,7 +20,6 @@ public class Column {
 	
 	/* (non-Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)
-	 * check if same column name for equality
 	 */
 	@Override
 	public boolean equals(Object obj) {
@@ -31,7 +30,6 @@ public class Column {
 	
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
-	 * use column name hashcode
 	 */
 	@Override
 	public int hashCode() {
