@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author liorafriedberg
  * extension of menu for automated user input to facilitate testing
+ * @author liorafriedberg
  */
 public class AutoMenu extends Menu {
 	
