@@ -6,7 +6,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
-
+/**
+ * @author liorafriedberg
+ * interacts with user for input
+ */
 public class Menu {
 	Scanner userInput;
 	
@@ -14,6 +17,9 @@ public class Menu {
 		userInput = new Scanner(System.in);
 	}
 	
+	/**
+	 * @return		all files needed for simulation, assumed to be in the project-level directory
+	 */
 	public List<File> getAllFiles() {
 		System.out.println("Please enter all filenames for files you would like to "
 				+ "use, comma separated.");
@@ -40,7 +46,11 @@ public class Menu {
 		return files;
 	}
 	
-	public Column getProbabilityColumn(List<Column> columns) {
+	/**
+	 * @param columns		all columns from files
+	 * @return				column with the probability distribution
+	 */
+	public Column getProbabilityColumn(List<Column> columns) { 
 		System.out.println("Please enter the name of the column with the probabilities.");
 		String input = null;
 		boolean wait = true;
@@ -63,6 +73,10 @@ public class Menu {
 		return probColumn;
 	}
 	
+	/**
+	 * @param currentColumns		all columns from files
+	 * @return						columns of the datatypes to generate, in order
+	 */
 	public List<Column> getFinalColumns(List<Column> currentColumns) {
 		List<Column> finalColumns = new ArrayList<>();
 		System.out.println("I will now print all columns. Please rewrite the list with all relevant columns"
@@ -91,6 +105,9 @@ public class Menu {
 		return finalColumns;
 	}
 	
+	/**
+	 * @return		number of individuals to simulate
+	 */
 	public int getNumRows() {
 		System.out.println("Please enter the number of individuals to simulate.");
 		boolean wait = true;
@@ -104,6 +121,11 @@ public class Menu {
 		return num;
 	}
 	
+	
+	/**
+	 * @param column		
+	 * @return			source for input column
+	 */
 	public Source getSource(Column column) { 
 		Source source = null;
 		System.out.println("For datatype " + column.datatype + ", please choose a source");
@@ -136,6 +158,9 @@ public class Menu {
 		return source;
 	}
 	
+	/**
+	 * @return		source within the randomized source options
+	 */
 	public Source getRandom() {
 		Source source = null;
 		System.out.println("Please choose a form of randomization, by typing 'UUID', 'value_from_list', "
@@ -161,6 +186,9 @@ public class Menu {
 		return source;
 	}
 	
+	/**
+	 * @return		file from user
+	 */
 	public File getFile() {
 		System.out.println("Please enter filename for data generation");
 		boolean wait = true;
@@ -180,6 +208,9 @@ public class Menu {
 		return file;
 	}
 	
+	/**
+	 * @return		percentage or frequency data format
+	 */
 	public int getDataFormat() {
 		System.out.println("Please enter the data format. For percentages, press 1. For frequencies, press 2.");
 		int input = 0;
@@ -194,18 +225,33 @@ public class Menu {
 		return input;
 	}
 	
+	/**
+	 * @param column		
+	 * @param columns		all columns
+	 * @return				the columns on which the input column's value depends
+	 */
 	public List<Column> getDependencies(Column column, List<Column> columns) {
 		System.out.println("For datatype " + column.datatype + ", please list all other datatypes"
 				+ " on which its generation depends, comma separated.");
 		return getColumnRange(column, columns);
 	}
 	
+	/**
+	 * @param column
+	 * @param columns		all columns
+	 * @return				the columns with the potential values for a datatype and their distributions
+	 */
 	public List<Column> getPotentialValues(Column column, List<Column> columns) {
 		System.out.println("For datatype " + column.datatype + ", please list the names of columns"
 				+ " with the potential values and probability distributions, comma separated.");
 		return getColumnRange(column, columns);
 	}
 	
+	/**
+	 * @param column		
+	 * @param columns
+	 * @return		list of columns from user input
+	 */
 	public List<Column> getColumnRange(Column column, List<Column> columns) {		
 		List<Column> range = new ArrayList<>();
 		String input = null;
@@ -229,6 +275,10 @@ public class Menu {
 		return range; 
 	}
 	
+	/**
+	 * assigns labels to columns to replace the datatype name with a user-friendly name
+	 * @param potentialValues		columns with the potential values for a datatype and their distributions
+	 */
 	public void getLabels(List<Column> potentialValues) {
 		System.out.println("I will output all datatype values. Please input the friendly label for the column.");
 		for (Column column : potentialValues) {
