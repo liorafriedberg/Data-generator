@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 /**
- * @author liorafriedberg
  * interacts with user for input
+ * @author liorafriedberg
  */
 public class Menu {
 	Scanner userInput;
