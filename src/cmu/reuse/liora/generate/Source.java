@@ -1,8 +1,8 @@
 package cmu.reuse.liora.generate;
 
 /**
- * @author liorafriedberg
  * options for determining the synthetic data value
+ * @author liorafriedberg
  */
 public enum Source {	
 	PROBS, //prob distribution
