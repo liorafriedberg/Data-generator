@@ -1,0 +1,42 @@
+Data generation process for each column:
+
+insurance_member_id: UUID
+
+grocery_member_id: UUID
+
+plan_number: assigned sequentially, range from 1 (as input) to total number of individuals, 
+beginning with an offset
+
+dob: age range established from probability distribution, then random day within this age range generated and
+transformed into dob format
+
+address: assigned sequentially from file
+
+credit_card: assigned sequentially, range from 1000000000000000 (as input) to this input + total number of 
+individuals, beginning with an offset
+
+ad_keywords: random number between 1 and 15 (as input), this number of words chosen randomly from list in 
+ad_keywords.csv concatenated
+
+coupon_code: assigned sequentially, range from 1 (as input) to total number of individuals, 
+beginning with an offset
+
+firstname: based off probability distribution, file used depending on gender: either dist.female.first.csv
+or dist.male.first.csv, for female and male respectively
+
+lastname: based off probability distribution in dist.all.last.csv
+
+gender: based off probability distribution in gender.csv
+
+ethnicity: based off probability distributions depending on zip value using population_data.csv
+
+ssn: assigned sequentially, range from 1000000000 (as input) to this input + total number of individuals, 
+beginning with an offset
+
+zip: based off population distributions in population_data.csv
+
+id: assigned sequentially
+
+city: statically assigned depending on zip value using zip.csv
+
+state: statically assigned depending on zip value using zip.csv
