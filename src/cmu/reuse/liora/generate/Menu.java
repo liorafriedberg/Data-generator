@@ -108,11 +108,11 @@ public class Menu {
 	/**
 	 * @return		number of individuals to simulate
 	 */
-	public int getNum() {
+	public long getNum() {
 		boolean wait = true;
-		int num = 0;
+		long num = 0;
 		while (wait) {
-			num = userInput.nextInt();
+			num = userInput.nextLong();
 			if (num > 0) {
 				wait = false;
 			}
@@ -163,7 +163,7 @@ public class Menu {
 	public Source getRandom() {
 		Source source = null;
 		System.out.println("Please choose a form of randomization, by typing 'UUID', 'value_from_list', "
-				+ "or 'number'");
+				+ "'offset', or 'number'");
 		boolean wait = true;
 		String input = null;
 		while (wait) {
@@ -176,6 +176,8 @@ public class Menu {
 					source = Source.RAND_LINE;
 				} else if (input.equals("number")) {
 					source = Source.RAND_NUMBER;
+				} else if (input.equals("offset")) {
+					source = Source.RAND_OFFSET;
 				} else {
 					wait = true;
 					System.out.println("Please enter 'UUID', 'value from list', or 'number'");
