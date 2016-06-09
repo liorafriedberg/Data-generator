@@ -6,6 +6,7 @@ package cmu.reuse.liora.generate;
  */
 public enum Source {	
 	PROBS, //prob distribution
+	DEP_PROBS_FILE, //file depends on prev value, prob distribution
 	DEP_PROBS, //depends on prev value, prob distribution
 	DEP_STATIC, //depends on prev value, pre-determined	
 	RANDOM, //random generation
