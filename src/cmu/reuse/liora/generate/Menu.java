@@ -26,8 +26,9 @@ public class Menu {
 		String[] fileParts;
 		List<File> files = new ArrayList<>();
 		boolean wait = true;
-		String input = null;
+		String input = null;		
 		while (wait) {
+			boolean mistake = false;
 			input = userInput.next();
 			if (input != null) {
 				fileParts = input.split(",");
@@ -35,12 +36,17 @@ public class Menu {
 					File file = new File(fileParts[i]);
 					if (!file.exists() || !file.canRead() || !file.isFile() || file.isDirectory()) {
 						System.out.println("Invalid file entered. Please try again.");
+						mistake = true;
 					}
 					else {
 						files.add(file);					
 					}
 				}
-				wait = false;	
+				if (!mistake) {
+					wait = false;	
+				} else {
+					files.clear();
+				}
 			}
 		}
 		return files;
@@ -78,8 +84,8 @@ public class Menu {
 	 */
 	public List<Column> getFinalColumns(List<Column> currentColumns) {
 		List<Column> finalColumns = new ArrayList<>();
-		System.out.println("I will now print all columns. Please rewrite the list with all relevant columns"
-				+ " in the desired order, comma separated.");
+		System.out.println("I will now print all columns. Please rewrite the list with all columns"
+				+ " to generate, in the desired order, comma separated.");
 		for (Column column : currentColumns) {
 			System.out.println(column.datatype);
 		}
@@ -89,16 +95,28 @@ public class Menu {
 				input = userInput.next();
 				if (input != null) {
 					String[] tempColArr = input.split(",");
+					boolean mistake = false;
 					for (int i = 0; i < tempColArr.length; i++) {
 						String columnStr = tempColArr[i];
-						for (Column column : currentColumns) { //could clean up, add error check 
+						boolean found = false;
+						for (Column column : currentColumns) {
 							if (column.datatype.equals(columnStr)) {
 								finalColumns.add(column);
+								found = true;
 								break;
 							}
 						}
+						if (!found) {
+							mistake = true;
+							break;
+						}
 					}
-					wait = false;
+					if (mistake) {
+						System.out.println("A column name did not match. Please try again.");						
+					finalColumns.clear();
+					} else {
+						wait = false;
+					}
 				}
 			}		
 		return finalColumns;
@@ -238,8 +256,8 @@ public class Menu {
 		Map<String, File> valueToFile = new HashMap<>();
 		String input = null;
 		boolean wait = true;
-		boolean mistake = false;
 		while (wait) {
+			boolean mistake = false;
 			input = userInput.next();
 			if (input != null) {
 				String[] pairs = input.split(",");
@@ -258,6 +276,8 @@ public class Menu {
 				}
 				if (!mistake) {
 					wait = false;
+				} else {
+					valueToFile.clear();
 				}
 			}
 		}
@@ -296,19 +316,30 @@ public class Menu {
 		String input = null;
 		boolean wait = true;
 		while (wait) {
+			boolean mistake = false;			
 			input = userInput.next();
 			if (input != null) {
 				String[] parts = input.split(",");
 				for (int i = 0; i < parts.length; i++) {
+					boolean found = false;
 					String arrColumn = parts[i];
 					for (Column col : columns) {
 						if (col.datatype.equals(arrColumn)) {
 							range.add(col);
+							found = true;
 							break;
 						}
 					}
+					if (!found) {
+						mistake = true;
+					}
 				}
-				wait = false;
+				if (mistake) {
+					System.out.println("Entered invalid column. Please try again.");
+					range.clear();
+				} else {
+					wait = false;
+				}
 			}
 		}
 		return range; 
