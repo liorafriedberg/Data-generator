@@ -64,7 +64,7 @@ public class Generator {
 		
 		List<Individual> people = new ArrayList<>();
 		System.out.println("Please enter the number of individuals to simulate.");
-		int numRows = menu.getNum(); //get number of rows user wants
+		long numRows = menu.getNum(); //get number of rows user wants
 		for (int i = 0; i < numRows; i++) {
 			Individual person = new Individual();
 			Column c = new Column("id");
@@ -162,7 +162,19 @@ public class Generator {
 						person.setValue(column, "" + Math.random()); 
 					}
 					
-				} else { //rand_line - now able to do more than one
+				} else if (randSource.equals(Source.RAND_OFFSET)) {
+					int count = people.size();	
+					int offset = ThreadLocalRandom.current().nextInt(0, count + 1); 
+					System.out.println("Please input starting value (ie '1' or '10000000')");
+					long start = (long) menu.getNum();
+					long assign = start + offset;
+					for (Individual person : people) {
+						person.setValue(column, assign + ""); 
+						assign++;
+						if (assign >= count + start) assign = start;
+					}
+				}
+				else { //rand_line/s
 					File file = menu.getFile();
 					CSVReader readerCount = new CSVReader(file);
 					int count = readerCount.countLines();
@@ -170,7 +182,7 @@ public class Generator {
 					System.out.println("Please enter the upper bound of the number "
 							+ "of values, starting"
 							+ " at 1, to generate for " + column.datatype);
-					int num = menu.getNum();
+					int num = (int) menu.getNum();
 					for (Individual person: people) {
 						int times = ThreadLocalRandom.current().nextInt(1, num + 1);					
 						String concat = "";
