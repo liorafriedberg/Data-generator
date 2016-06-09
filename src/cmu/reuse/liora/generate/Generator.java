@@ -78,7 +78,8 @@ public class Generator {
 			if (source.equals(Source.PROBS)) { //done with probs
 				File file = menu.getFile();
 				CSVReader reader = new CSVReader(file);
-				Column probColumn = menu.getProbabilityColumn(reader.header);
+				System.out.println("Please enter the name of the column with the probabilities.");
+				Column probColumn = menu.getColumn(reader.header);
 				//value column is column, probColumn is frequency column
 				int format = menu.getDataFormat(); //1 is percentage 2 is freq
 				
@@ -92,8 +93,35 @@ public class Generator {
 					person.setValue(column, reader.calculate());
 				}
 				reader.close();
+			} 
+			else if (source.equals(Source.DEP_PROBS_FILE)) {
+				System.out.println("Please enter the datatype on which file choice depends");
+				Column depColumn = menu.getColumn(allColumns);
+				Map<String, File> valueToFile = menu.getFileDeps();
+				Map<File, CSVReader> fileToReader = new HashMap<>();
+				for (File f : valueToFile.values()) {
+					CSVReader reader = new CSVReader(f);
+					System.out.println("For file " + f.getName() + " please enter the following");
+					System.out.println("Please enter the name of the column with the probabilities");
+					Column probColumn = menu.getColumn(reader.header);
+					int format = menu.getDataFormat(); //1 is percentage 2 is freq
+					if (format == 1) {
+						reader.parseProbs(column, probColumn);
+					} else {
+						reader.parseFreqs(column, probColumn);
+					}
+					fileToReader.put(f, reader);			
+				}		
+				for (Individual person : people) {
+					String currValue = person.getValues().get(depColumn);
+					File file = valueToFile.get(currValue); 
+					CSVReader reader = fileToReader.get(file); 
+					person.setValue(column, reader.calculate());
+				}
+				for (CSVReader r : fileToReader.values()) {
+					r.close();
+				}			
 			}
-			
 			else if (source.equals(Source.DEP_PROBS)) {
 				File file = menu.getFile();								
 				CSVReader reader = new CSVReader(file);
@@ -149,7 +177,6 @@ public class Generator {
 				personReader.close();
 				}				
 			}
-			
 			else if (source.equals(Source.RANDOM)) { //done with random
 				Source randSource = menu.getRandom();
 				if (randSource.equals(Source.RAND_UUID)) {
