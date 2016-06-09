@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Generates synthetic individual-level data from aggregate data
@@ -19,7 +20,8 @@ public class Generator {
 	//**note to reader: override menu calls in automenu, change back to menu for user interaction**	
 	
 	/* TODO:
-	 * tests (performance numbers, functionality)
+	 * tests (functionality - run more tests
+	 * question: gender files?)
 	 */
 	
 	/**
@@ -46,7 +48,7 @@ public class Generator {
 	 * @return		the generated individual data
 	 */
 	public static List<Individual> generate() {
-		Menu menu = new AutoMenu(); //AutoMenu to automate
+		Menu menu = new Menu(); //AutoMenu to automate
 		List<File> files = menu.getAllFiles(); //get all relevant files from user		
 		
 		List<Column> columns = new ArrayList<>();
@@ -61,9 +63,12 @@ public class Generator {
 		//arraylist will maintain order
 		
 		List<Individual> people = new ArrayList<>();
-		int numRows = menu.getNumRows(); //get number of rows user wants
+		System.out.println("Please enter the number of individuals to simulate.");
+		int numRows = menu.getNum(); //get number of rows user wants
 		for (int i = 0; i < numRows; i++) {
 			Individual person = new Individual();
+			Column c = new Column("id");
+			person.setValue(c, i + 1 + "");
 			people.add(person);
 		}
 		
@@ -157,15 +162,26 @@ public class Generator {
 						person.setValue(column, "" + Math.random()); 
 					}
 					
-				} else { //rand_line
+				} else { //rand_line - now able to do more than one
 					File file = menu.getFile();
 					CSVReader readerCount = new CSVReader(file);
 					int count = readerCount.countLines();
-					readerCount.close();					
+					readerCount.close();	
+					System.out.println("Please enter the upper bound of the number "
+							+ "of values, starting"
+							+ " at 1, to generate for " + column.datatype);
+					int num = menu.getNum();
 					for (Individual person: people) {
-						CSVReader reader = new CSVReader(file);
-						person.setValue(column, reader.staticRead(column, count));
-						reader.close();
+						int times = ThreadLocalRandom.current().nextInt(1, num + 1);					
+						String concat = "";
+						for (int i = 0; i < times; i++) {
+							CSVReader reader = new CSVReader(file);
+							concat = concat + reader.staticRead(column, count) + " ";
+							reader.close();
+						}
+						person.setValue(column, concat);
+						
+
 					}
 				}
 				
