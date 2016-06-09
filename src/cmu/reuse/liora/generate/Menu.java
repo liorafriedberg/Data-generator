@@ -50,8 +50,7 @@ public class Menu {
 	 * @param columns		all columns from files
 	 * @return				column with the probability distribution
 	 */
-	public Column getProbabilityColumn(List<Column> columns) { 
-		System.out.println("Please enter the name of the column with the probabilities.");
+	public Column getColumn(List<Column> columns) { 
 		String input = null;
 		boolean wait = true;
 		Column probColumn = null;
@@ -133,6 +132,8 @@ public class Menu {
 				+ " dependencies, press 2");
 		System.out.println("For static generation with previous value dependencies, press 3");
 		System.out.println("For random generation, press 4");
+		System.out.println("For generation from probability distributions, with "
+				+ "file choice dependencies on previous values, press 5");
 		boolean wait = true;
 		int input = 0;
 		while (wait) {
@@ -147,10 +148,12 @@ public class Menu {
 					source = Source.DEP_STATIC;
 				} else if (input == 4) {
 					source = Source.RANDOM;
+				} else if (input == 5) {
+					source = Source.DEP_PROBS_FILE;
 				} else {
 					wait = true;
 					System.out.println("invalid option chosen. Please enter"
-						+ " 1, 2, 3, or 4."); 
+						+ " 1, 2, 3, 4, or 5."); 
 				}
 			}
 		}
@@ -224,6 +227,41 @@ public class Menu {
 			else System.out.println("Invalid number entered. Please enter 1 or 2.");
 		}
 		return input;
+	}
+	
+	/**
+	 * @return		a map from value to file for dependent datatype generation
+	 */
+	public Map<String, File> getFileDeps() {
+		System.out.println("Please enter all value-file pairs. Format value:file and comma"
+				+ "separated");
+		Map<String, File> valueToFile = new HashMap<>();
+		String input = null;
+		boolean wait = true;
+		boolean mistake = false;
+		while (wait) {
+			input = userInput.next();
+			if (input != null) {
+				String[] pairs = input.split(",");
+				for (int i = 0; i < pairs.length; i++) {
+					String pair = pairs[i];
+					String[] split = pair.split(":");
+					String value = split[0];
+					File file = new File(split[1]);
+					if (!file.exists() || !file.canRead() || !file.isFile() || file.isDirectory()) {
+						mistake = true;
+						System.out.println("Invalid file entered. Please try again.");
+					}
+					else {
+						valueToFile.put(value, file);						
+					}
+				}
+				if (!mistake) {
+					wait = false;
+				}
+			}
+		}
+		return valueToFile;
 	}
 	
 	/**
