@@ -11,6 +11,7 @@ public enum Source {
 	RANDOM, //random generation
 		RAND_UUID, //uuid
 		RAND_LINE, //value from column and random line in file
+		RAND_OFFSET, //sequential value from 1 to x, starting with random offset
 		RAND_NUMBER; //random number between 0 and 1 (can modify based on needs)
 	
 }
