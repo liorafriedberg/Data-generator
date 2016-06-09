@@ -108,8 +108,7 @@ public class Menu {
 	/**
 	 * @return		number of individuals to simulate
 	 */
-	public int getNumRows() {
-		System.out.println("Please enter the number of individuals to simulate.");
+	public int getNum() {
 		boolean wait = true;
 		int num = 0;
 		while (wait) {
