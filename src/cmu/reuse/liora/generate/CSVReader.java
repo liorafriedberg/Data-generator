@@ -126,29 +126,18 @@ public class CSVReader {
 	}
 	
 	/**
-	 * parse static value from file based on row
-	 * @param indexToValue		indices to values to match on
-	 * @param valIndex			index of the column with the value to return
-	 * @return					value, based off dependencies
+	 * @param indices 			indices to values to match on 
+	 * @param valIndex		index of the column with the value to return
+	 * @return				map from column indices to their values to the possible value for each line
 	 */
-	public String findStaticValue(Map<Integer, String> indexToValue, int valIndex) {	
-		String value = null;		
+	public Map<String, String> findStaticValue(int depIndex, int valIndex) {	 //map from zip to city	
+			Map<String, String> depToVal = new HashMap<>();
 		while (sc.hasNextLine()) {
 			String line = sc.nextLine();
 			String[] parts = line.split(",");
-			boolean found = true;
-			for (int index : indexToValue.keySet()) {
-				if (!parts[index].equals(indexToValue.get(index))) { //look for corresponding line in file
-					found = false;
-					break;
-				}
-			}
-			if (found) {	
-				value = parts[valIndex]; //take value directly from file
-				break;
-			}
+			depToVal.put(parts[depIndex], parts[valIndex]);
 		}
-		return value;
+		return depToVal;
 	}
 	
 	/**
