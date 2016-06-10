@@ -19,11 +19,6 @@ public class Generator {
 	
 	//**note to reader: override menu calls in automenu, change back to menu for user interaction**	
 	
-	/* TODO:
-	 * tests (functionality - run more tests
-	 * question: gender files?)
-	 */
-	
 	/**
 	 * starts generation
 	 * @param args
@@ -189,7 +184,7 @@ public class Generator {
 						person.setValue(column, "" + Math.random()); 
 					}
 					
-				} else if (randSource.equals(Source.RAND_OFFSET)) {
+				} else if (randSource.equals(Source.RAND_OFFSET_NUM)) {
 					int count = people.size();	
 					int offset = ThreadLocalRandom.current().nextInt(0, count + 1); 
 					System.out.println("Please input starting value (ie '1' or '10000000')");
@@ -199,6 +194,16 @@ public class Generator {
 						person.setValue(column, assign + ""); 
 						assign++;
 						if (assign >= count + start) assign = start;
+					}
+				} else if (randSource.equals(Source.SEQUENTIAL_LINE)) {
+					File file = menu.getFile();				
+					CSVReader reader = new CSVReader(file);
+					System.out.println("Please enter the column name with the values for " + column.datatype);
+					Column seqColumn = menu.getColumn(reader.header);
+					int colIndex = reader.getColumnIndex(seqColumn);
+					for (Individual person : people) {
+						String[] parts = reader.sc.nextLine().split(",");
+						person.setValue(column, parts[colIndex]);
 					}
 				}
 				else { //rand_line/s
@@ -218,9 +223,7 @@ public class Generator {
 							concat = concat + reader.staticRead(column, count) + " ";
 							reader.close();
 						}
-						person.setValue(column, concat);
-						
-
+						person.setValue(column, concat);						
 					}
 				}
 				
