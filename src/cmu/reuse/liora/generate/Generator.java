@@ -174,12 +174,13 @@ public class Generator {
 				person.setValue(column, value);
 				personReader.close();
 				}				
-			} else if (source.equals(Source.DOB)) {
+			} else if (source.equals(Source.DEP_DATE)) {
 				File file = menu.getFile();
 				CSVReader reader = new CSVReader(file);
-				System.out.println("Please enter the name of the column with the probabilities for age group");
+				System.out.println("Please enter the name of the column with the probabilities for the "
+						+ "dependency");
 				Column probColumn = menu.getColumn(reader.header);
-				System.out.println("Please enter the name of the column with the values for age group");
+				System.out.println("Please enter the name of the column with the values for the dependency");
 				Column valColumn = menu.getColumn(reader.header);
 				int format = menu.getDataFormat();
 				if (format == 1) {
