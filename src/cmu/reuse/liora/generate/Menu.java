@@ -153,7 +153,7 @@ public class Menu {
 		System.out.println("For random generation, press 4");
 		System.out.println("For generation from probability distributions, with "
 				+ "file choice dependencies on previous values, press 5");
-		System.out.println("For dob generation, press 6");
+		System.out.println("For date generation with range dependency, press 6");
 		boolean wait = true;
 		int input = 0;
 		while (wait) {
@@ -171,7 +171,7 @@ public class Menu {
 				} else if (input == 5) {
 					source = Source.DEP_PROBS_FILE;
 				} else if (input == 6) {
-					source = Source.DOB;
+					source = Source.DEP_DATE;
 				} else {
 					wait = true;
 					System.out.println("invalid option chosen. Please enter"
