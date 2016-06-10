@@ -3,6 +3,7 @@ package cmu.reuse.liora.generate;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * extension of menu for automated user input to facilitate testing
@@ -10,16 +11,7 @@ import java.util.List;
  */
 public class AutoMenu extends Menu {
 	
-	boolean firstFile;
-	Column z = new Column();
-	File zFile; 
-	File pFile;
-	
-	public AutoMenu() {
-		firstFile = true;
-		z.datatype = "zip";
-		zFile = new File("zip.csv");
-		pFile = new File("population_data.csv");
+	public AutoMenu() {		
 	}
 
 	/* (non-Javadoc)
@@ -27,20 +19,15 @@ public class AutoMenu extends Menu {
 	 */
 	@Override
 	public List<File> getAllFiles() {
-		List<File> list = new ArrayList<>();
-		list.add(zFile); //files once for later
-		list.add(pFile);
-		return list;
+		return null;
 	}
 	
 	/* (non-Javadoc)
 	 * @see cmu.reuse.liora.generate.Menu#getProbabilityColumn(java.util.List)
 	 */
 	@Override
-	public Column getProbabilityColumn(List<Column> columns) {
-		Column c = new Column(); //column/s once for later
-		c.datatype = "population";
-		 return c;
+	public Column getColumn(List<Column> columns) {
+		return null;
 	}
 	
 	/* (non-Javadoc)
@@ -48,23 +35,15 @@ public class AutoMenu extends Menu {
 	 */
 	@Override
 	public List<Column> getFinalColumns(List<Column> currentColumns) {
-		List<Column> list = new ArrayList<>();
-		Column b = new Column();
-		Column c = new Column();		
-		b.datatype = "city";
-		c.datatype = "state";	
-		list.add(z);
-		list.add(b);
-		list.add(c);
-		return list;
+		return null;
 	}
 	
 	/* (non-Javadoc)
 	 * @see cmu.reuse.liora.generate.Menu#getNumRows()
 	 */
 	@Override
-	public int getNumRows() {
-		return 10; //can change
+	public long getNum() {
+		return 100000; //can change
 	}
 	
 	/* (non-Javadoc)
@@ -72,11 +51,7 @@ public class AutoMenu extends Menu {
 	 */
 	@Override
 	public Source getSource(Column column) { 
-		if (column.datatype.equals("zip")) {
-			return Source.PROBS;
-		} else {
-			return Source.DEP_STATIC;
-		}
+			return null;
 	}
 	
 	/* (non-Javadoc)
@@ -92,13 +67,7 @@ public class AutoMenu extends Menu {
 	 */
 	@Override
 	public File getFile() {
-		if (firstFile) {
-			firstFile = false;
-			return pFile;
-		}
-		else {
-			return zFile;
-		}
+		return null;
 	}
 	
 	/* (non-Javadoc)
@@ -106,7 +75,15 @@ public class AutoMenu extends Menu {
 	 */
 	@Override
 	public int getDataFormat() {
-		return 2;
+		return 1;
+	}
+	
+	/* (non-Javadoc)
+	 * @see cmu.reuse.liora.generate.Menu#getFileDeps()
+	 */
+	@Override
+	public Map<String, File> getFileDeps() {
+		return null;
 	}
 	
 	/* (non-Javadoc)
@@ -114,9 +91,7 @@ public class AutoMenu extends Menu {
 	 */
 	@Override
 	public List<Column> getDependencies(Column column, List<Column> columns) {
-		List<Column> list = new ArrayList<>();	
-		list.add(z);
-		return list; 
+		return null; 
 	}
 	
 	/* (non-Javadoc)
@@ -140,6 +115,5 @@ public class AutoMenu extends Menu {
 	 */
 	@Override
 	public void getLabels(List<Column> potentialValues) {
-		return;
 	}
 }
