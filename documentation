@@ -7,8 +7,8 @@ grocery_member_id: UUID
 plan_number: assigned sequentially, range from 1 (as input) to total number of individuals, 
 beginning with an offset
 
-dob: age range established from probability distribution, then random day within this age range generated and
-transformed into dob format
+dob: age range established from probability distribution, then random day and random
+year within this age range generated, currently using age_groups.csv
 
 address: assigned sequentially from file
 
