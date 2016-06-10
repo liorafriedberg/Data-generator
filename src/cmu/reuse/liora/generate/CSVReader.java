@@ -118,6 +118,7 @@ public class CSVReader {
 					double prob = Double.parseDouble(parts[index]); //probabilities directly in the row
 					probabilities.put(label, prob);
 				}
+			
 				bound();
 				break;
 			}
@@ -222,7 +223,7 @@ public class CSVReader {
 			Map<Double, Double> secondaryMap = new HashMap<>();	
 			double d = probabilities.get(s);
 			secondaryMap.put(upperBound, upperBound + d); //range for random number to corresp to this value
-			upperBound = upperBound + d; //update to prep for next range
+			upperBound = upperBound + d; //update to prep for next range			
 			bounds.put(s, secondaryMap);
 		}
 	}		
