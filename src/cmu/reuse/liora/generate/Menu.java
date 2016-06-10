@@ -183,8 +183,8 @@ public class Menu {
 	 */
 	public Source getRandom() {
 		Source source = null;
-		System.out.println("Please choose a form of randomization, by typing 'UUID', 'value_from_list', "
-				+ "'offset', or 'number'");
+		System.out.println("Please choose a form of randomization, by typing 'UUID', 'rand_value_from_list', "
+				+ "'offset_num', 'seq_value' or 'number'");
 		boolean wait = true;
 		String input = null;
 		while (wait) {
@@ -193,15 +193,19 @@ public class Menu {
 				wait = false;
 				if (input.equals("UUID")) {
 					source = Source.RAND_UUID;
-				} else if (input.equals("value_from_list")) {
+				} else if (input.equals("rand_value_from_list")) {
 					source = Source.RAND_LINE;
 				} else if (input.equals("number")) {
 					source = Source.RAND_NUMBER;
-				} else if (input.equals("offset")) {
-					source = Source.RAND_OFFSET;
-				} else {
+				} else if (input.equals("offset_num")) {
+					source = Source.RAND_OFFSET_NUM;
+				} else if (input.equals("seq_value")) {
+					source = Source.SEQUENTIAL_LINE;
+				}
+				else {
 					wait = true;
-					System.out.println("Please enter 'UUID', 'value from list', or 'number'");
+					System.out.println("Please enter 'UUID', 'rand_value_from_list', "
+							+ "'offset_num', 'seq_value', or 'number'");
 				}
 			}
 		}
@@ -252,7 +256,7 @@ public class Menu {
 	 */
 	public Map<String, File> getFileDeps() {
 		System.out.println("Please enter all value-file pairs. Format value:file and comma"
-				+ "separated");
+				+ " separated");
 		Map<String, File> valueToFile = new HashMap<>();
 		String input = null;
 		boolean wait = true;
