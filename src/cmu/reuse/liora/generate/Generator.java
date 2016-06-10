@@ -3,7 +3,10 @@ package cmu.reuse.liora.generate;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -171,6 +174,38 @@ public class Generator {
 				person.setValue(column, value);
 				personReader.close();
 				}				
+			} else if (source.equals(Source.DOB)) {
+				File file = menu.getFile();
+				CSVReader reader = new CSVReader(file);
+				System.out.println("Please enter the name of the column with the probabilities for age group");
+				Column probColumn = menu.getColumn(reader.header);
+				System.out.println("Please enter the name of the column with the values for age group");
+				Column valColumn = menu.getColumn(reader.header);
+				int format = menu.getDataFormat();
+				if (format == 1) {
+					reader.parseProbs(valColumn, probColumn);
+				}
+				else { //== 2
+					reader.parseFreqs(valColumn, probColumn);
+				}
+				for (Individual person : people) {
+					String range = reader.calculate();
+					String[] ends = range.split("-");
+					int start = Integer.parseInt(ends[0]);
+					int end = Integer.parseInt(ends[1]);	
+					int randomDay = ThreadLocalRandom.current().nextInt(1, 366);
+					int randomAge = ThreadLocalRandom.current().nextInt(start, end + 1);	
+					Calendar calendar = Calendar.getInstance();
+					int year = Calendar.getInstance().get(Calendar.YEAR);
+					randomAge = year - randomAge;
+					calendar.set(Calendar.DAY_OF_YEAR, randomDay);
+					calendar.set(Calendar.YEAR, randomAge);
+					Date date = calendar.getTime();
+					SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");				
+					String dob = sdf.format(date);
+					person.setValue(column, dob);
+				}
+				reader.close();								
 			}
 			else if (source.equals(Source.RANDOM)) { //done with random
 				Source randSource = menu.getRandom();
