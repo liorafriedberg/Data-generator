@@ -71,7 +71,8 @@ public class Menu {
 					}
 				}
 				if (wait) { 
-					System.out.println("Column name did not match any column in given file.");
+					System.out.println("Column name did not match any column in given file."
+							+ " Please try again.");
 				}
 			}
 		}
@@ -152,6 +153,7 @@ public class Menu {
 		System.out.println("For random generation, press 4");
 		System.out.println("For generation from probability distributions, with "
 				+ "file choice dependencies on previous values, press 5");
+		System.out.println("For dob generation, press 6");
 		boolean wait = true;
 		int input = 0;
 		while (wait) {
@@ -168,10 +170,12 @@ public class Menu {
 					source = Source.RANDOM;
 				} else if (input == 5) {
 					source = Source.DEP_PROBS_FILE;
+				} else if (input == 6) {
+					source = Source.DOB;
 				} else {
 					wait = true;
 					System.out.println("invalid option chosen. Please enter"
-						+ " 1, 2, 3, 4, or 5."); 
+						+ " 1, 2, 3, 4, 5 or 6."); 
 				}
 			}
 		}
@@ -184,7 +188,7 @@ public class Menu {
 	public Source getRandom() {
 		Source source = null;
 		System.out.println("Please choose a form of randomization, by typing 'UUID', 'rand_value_from_list', "
-				+ "'offset_num', 'seq_value' or 'number'");
+				+ "'offset_num', 'seq_value', or 'number'");
 		boolean wait = true;
 		String input = null;
 		while (wait) {
@@ -201,11 +205,10 @@ public class Menu {
 					source = Source.RAND_OFFSET_NUM;
 				} else if (input.equals("seq_value")) {
 					source = Source.SEQUENTIAL_LINE;
-				}
-				else {
+				}  else {
 					wait = true;
-					System.out.println("Please enter 'UUID', 'rand_value_from_list', "
-							+ "'offset_num', 'seq_value', or 'number'");
+					System.out.println("Invalid input. Please enter 'UUID', 'rand_value_from_list', "
+							+ "'offset_num', 'seq_value', or 'number'.");
 				}
 			}
 		}
