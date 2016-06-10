@@ -135,8 +135,7 @@ public class Generator {
 				}				
 				//index to potential has the potential values mapped with their indices
 				reader.close();
-				int format = menu.getDataFormat();
-				
+				int format = menu.getDataFormat();				
 				for (Individual person : people) {
 					CSVReader personReader = new CSVReader(file);
 					Map<Integer, String> indexToValue = new HashMap<>(); //index of dep cols and what vals looking for
@@ -154,8 +153,7 @@ public class Generator {
 					person.setValue(column, personReader.calculate());
 					personReader.close();
 				}
-			}
-			
+			}			
 			else if (source.equals(Source.DEP_STATIC)) { //done static deps
 				File file = menu.getFile();
 				CSVReader reader = new CSVReader(file);
@@ -174,7 +172,8 @@ public class Generator {
 				person.setValue(column, value);
 				personReader.close();
 				}				
-			} else if (source.equals(Source.DEP_DATE)) {
+			} 
+			else if (source.equals(Source.DEP_DATE)) {
 				File file = menu.getFile();
 				CSVReader reader = new CSVReader(file);
 				System.out.println("Please enter the name of the column with the probabilities for the "
@@ -220,7 +219,8 @@ public class Generator {
 						person.setValue(column, "" + Math.random()); 
 					}
 					
-				} else if (randSource.equals(Source.RAND_OFFSET_NUM)) {
+				} 
+				else if (randSource.equals(Source.RAND_OFFSET_NUM)) {
 					int count = people.size();	
 					int offset = ThreadLocalRandom.current().nextInt(0, count + 1); 
 					System.out.println("Please input starting value (ie '1' or '10000000')");
@@ -231,7 +231,8 @@ public class Generator {
 						assign++;
 						if (assign >= count + start) assign = start; //continue at first value
 					}
-				} else if (randSource.equals(Source.SEQUENTIAL_LINE)) {
+				} 
+				else if (randSource.equals(Source.SEQUENTIAL_LINE)) {
 					File file = menu.getFile();				
 					CSVReader reader = new CSVReader(file);
 					System.out.println("Please enter the column name with the values for " + column.datatype);
