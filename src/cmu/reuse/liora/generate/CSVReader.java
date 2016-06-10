@@ -160,11 +160,13 @@ public class CSVReader {
 	public void parseProbs(Column values, Column probs) throws NumberFormatException {
 		probabilities.clear();
 		bounds.clear();
+		int partsVal = getColumnIndex(values);
+		int partsProb = getColumnIndex(probs);
 		while (sc.hasNextLine()) {
 			String line = sc.nextLine();
 			String[] parts = line.split(",");
-			String value = parts[getColumnIndex(values)];
-			double prob = Double.parseDouble(parts[getColumnIndex(probs)]);
+			String value = parts[partsVal];
+			double prob = Double.parseDouble(parts[partsProb]);
 			probabilities.put(value, prob);
 		}
 		bound();		
@@ -180,11 +182,13 @@ public class CSVReader {
 		probabilities.clear();
 		bounds.clear(); 
 		double totalFreq = 0.0;
+		int partsVal = getColumnIndex(values);
+		int partsProb = getColumnIndex(probs);
 		while (sc.hasNextLine()) {
 			String line = sc.nextLine();
 			String[] parts = line.split(",");
-			String value = parts[getColumnIndex(values)];
-			double freq = Double.parseDouble(parts[getColumnIndex(probs)]);
+			String value = parts[partsVal];
+			double freq = Double.parseDouble(parts[partsProb]);
 			probabilities.put(value, freq);
 			totalFreq = totalFreq + freq;
 		}
@@ -209,7 +213,7 @@ public class CSVReader {
 					return s; //return corresp data value
 				}
 			}
-		}
+		}		
 		System.out.println("System calculation error");
 		return null;
 	}
@@ -219,12 +223,18 @@ public class CSVReader {
 	 */
 	public void bound() {
 		double upperBound = 0.0;
+		String lastStr = null;
 		for (String s : probabilities.keySet()) {
 			Map<Double, Double> secondaryMap = new HashMap<>();	
 			double d = probabilities.get(s);
+			lastStr = s;
 			secondaryMap.put(upperBound, upperBound + d); //range for random number to corresp to this value
 			upperBound = upperBound + d; //update to prep for next range			
 			bounds.put(s, secondaryMap);
+		}
+		Map<Double, Double> secondaryMap = bounds.get(lastStr);
+		for (Double d : secondaryMap.keySet()) {
+			secondaryMap.put(d, 1.0);
 		}
 	}		
 	
