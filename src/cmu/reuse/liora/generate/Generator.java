@@ -191,14 +191,14 @@ public class Generator {
 				}
 				for (Individual person : people) {
 					String range = reader.calculate();
-					String[] ends = range.split("-");
+					String[] ends = range.split("-"); //get range
 					int start = Integer.parseInt(ends[0]);
 					int end = Integer.parseInt(ends[1]);	
 					int randomDay = ThreadLocalRandom.current().nextInt(1, 366);
 					int randomAge = ThreadLocalRandom.current().nextInt(start, end + 1);	
 					Calendar calendar = Calendar.getInstance();
 					int year = Calendar.getInstance().get(Calendar.YEAR);
-					randomAge = year - randomAge;
+					randomAge = year - randomAge; //get birth year
 					calendar.set(Calendar.DAY_OF_YEAR, randomDay);
 					calendar.set(Calendar.YEAR, randomAge);
 					Date date = calendar.getTime();
@@ -208,14 +208,14 @@ public class Generator {
 				}
 				reader.close();								
 			}
-			else if (source.equals(Source.RANDOM)) { //done with random
+			else if (source.equals(Source.RANDOM)) {
 				Source randSource = menu.getRandom();
 				if (randSource.equals(Source.RAND_UUID)) {
 					for (Individual person : people) {
 						person.setValue(column, UUID.randomUUID().toString());
 					}					
 				}
-				else if (randSource.equals(Source.RAND_NUMBER)) { //what would really use this for? but an opt.
+				else if (randSource.equals(Source.RAND_NUMBER)) {
 					for (Individual person : people) {
 						person.setValue(column, "" + Math.random()); 
 					}
@@ -225,11 +225,11 @@ public class Generator {
 					int offset = ThreadLocalRandom.current().nextInt(0, count + 1); 
 					System.out.println("Please input starting value (ie '1' or '10000000')");
 					long start = (long) menu.getNum();
-					long assign = start + offset;
+					long assign = start + offset; //first num to assign
 					for (Individual person : people) {
 						person.setValue(column, assign + ""); 
 						assign++;
-						if (assign >= count + start) assign = start;
+						if (assign >= count + start) assign = start; //continue at first value
 					}
 				} else if (randSource.equals(Source.SEQUENTIAL_LINE)) {
 					File file = menu.getFile();				
@@ -239,10 +239,10 @@ public class Generator {
 					int colIndex = reader.getColumnIndex(seqColumn);
 					for (Individual person : people) {
 						String[] parts = reader.sc.nextLine().split(",");
-						person.setValue(column, parts[colIndex]);
+						person.setValue(column, parts[colIndex]); //read from column in next line
 					}
 				}
-				else { //rand_line/s
+				else { //rand_lines
 					File file = menu.getFile();
 					CSVReader readerCount = new CSVReader(file);
 					int count = readerCount.countLines();
@@ -250,13 +250,13 @@ public class Generator {
 					System.out.println("Please enter the upper bound of the number "
 							+ "of values, starting"
 							+ " at 1, to generate for " + column.datatype);
-					int num = (int) menu.getNum();
+					int num = (int) menu.getNum(); //will often be 1
 					for (Individual person: people) {
 						int times = ThreadLocalRandom.current().nextInt(1, num + 1);					
 						String concat = "";
 						for (int i = 0; i < times; i++) {
 							CSVReader reader = new CSVReader(file);
-							concat = concat + reader.staticRead(column, count) + " ";
+							concat = concat + reader.staticRead(column, count) + " "; //add next random value
 							reader.close();
 						}
 						person.setValue(column, concat);						
