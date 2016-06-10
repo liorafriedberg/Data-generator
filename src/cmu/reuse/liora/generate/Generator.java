@@ -57,8 +57,7 @@ public class Generator {
 		}
 		//columns now has all the possible columns
 		List<Column> allColumns = columns; //allColumns has all possible columns
-		columns = menu.getFinalColumns(columns); //columns has ones the user actually wants, in order		
-		//arraylist will maintain order
+		columns = menu.getFinalColumns(columns); //columns has ones the user actually wants, in order
 		
 		List<Individual> people = new ArrayList<>();
 		System.out.println("Please enter the number of individuals to simulate.");
