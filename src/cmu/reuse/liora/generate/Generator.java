@@ -19,7 +19,6 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 
 public class Generator {
-	
 	//**note to reader: override menu calls in automenu, change back to menu for user interaction**	
 	
 	/**
@@ -32,8 +31,9 @@ public class Generator {
 		long second = System.currentTimeMillis();
 		for (Individual i : rows) { //to test
 			Map<Column, String> values = i.getValues();
+			System.out.println("");
 			for (Column c : values.keySet()) {
-				System.out.println("datatype: " + c.datatype + " value: " + values.get(c));
+				System.out.print(c.datatype + ": " + values.get(c) + " ");
 			}
 		}
 		//now have rows to put in database!
@@ -71,200 +71,31 @@ public class Generator {
 		
 		for (Column column : columns) {
 			Source source = menu.getSource(column); //ask user for how want to do it - in order
-		
+			Simulator sim;
 			if (source.equals(Source.PROBS)) { //done with probs
-				File file = menu.getFile();
-				CSVReader reader = new CSVReader(file);
-				System.out.println("Please enter the name of the column with the probabilities.");
-				Column probColumn = menu.getColumn(reader.header);
-				//value column is column, probColumn is frequency column
-				int format = menu.getDataFormat(); //1 is percentage 2 is freq
-				
-				if (format == 1) {
-					reader.parseProbs(column, probColumn);
-				}
-				else { //== 2
-					reader.parseFreqs(column, probColumn);
-				}				
-				for (Individual person : people) {
-					person.setValue(column, reader.calculate());
-				}
-				reader.close();
+				sim = new ProbSim();
+				sim.simulate(menu, column, people, allColumns);
 			} 
 			else if (source.equals(Source.DEP_PROBS_FILE)) {
-				System.out.println("Please enter the datatype on which file choice depends");
-				Column depColumn = menu.getColumn(allColumns);
-				Map<String, File> valueToFile = menu.getFileDeps();
-				Map<File, CSVReader> fileToReader = new HashMap<>();
-				for (File f : valueToFile.values()) {
-					CSVReader reader = new CSVReader(f);
-					System.out.println("For file " + f.getName() + " please enter the following");
-					System.out.println("Please enter the name of the column with the probabilities");
-					Column probColumn = menu.getColumn(reader.header);
-					int format = menu.getDataFormat(); //1 is percentage 2 is freq
-					if (format == 1) {
-						reader.parseProbs(column, probColumn);
-					} else {
-						reader.parseFreqs(column, probColumn);
-					}
-					fileToReader.put(f, reader);			
-				}		
-				for (Individual person : people) {
-					String currValue = person.getValues().get(depColumn);
-					File file = valueToFile.get(currValue); 
-					CSVReader reader = fileToReader.get(file); 
-					person.setValue(column, reader.calculate());
-				}
-				for (CSVReader r : fileToReader.values()) {
-					r.close();
-				}			
+				sim = new DepProbFileSim();
+				sim.simulate(menu, column, people, allColumns);
 			}
 			else if (source.equals(Source.DEP_PROBS)) {
-				File file = menu.getFile();								
-				CSVReader reader = new CSVReader(file);
-				List<Column> dependencies = menu.getDependencies(column, reader.header);
-				List<Column> potentialValues = menu.getPotentialValues(column, reader.header);				
-				menu.getLabels(potentialValues); //these columns now have the label variable										
-				//list of columns to choose distribution from
-				
-				Map<Integer, Column> indexToPotential = new HashMap<>();
-				for (Column col : potentialValues) {
-					int index = reader.getColumnIndex(col);
-					indexToPotential.put(index, col);
-				}				
-				//index to potential has the potential values mapped with their indices
-				reader.close();
-				int format = menu.getDataFormat();				
-				for (Individual person : people) {
-					CSVReader personReader = new CSVReader(file);
-					Map<Integer, String> indexToValue = new HashMap<>(); //index of dep cols and what vals looking for
-					Map<Column, String> currentValues = person.getValues();
-					for (Column d : dependencies) {
-						int index = personReader.getColumnIndex(d);
-						indexToValue.put(index, currentValues.get(d));
-					}									
-					if (format == 1) {
-						personReader.parseProbsDep(indexToValue, indexToPotential);
-					} 
-					else { //== 2
-						personReader.parseFreqsDep(indexToValue, indexToPotential);
-					}														
-					person.setValue(column, personReader.calculate());
-					personReader.close();
-				}
+				sim = new DepProbSim();
+				sim.simulate(menu, column, people, allColumns);
 			}			
-			else if (source.equals(Source.DEP_STATIC)) { //done static deps
-				File file = menu.getFile();
-				CSVReader reader = new CSVReader(file);
-				List<Column> dependencies = menu.getDependencies(column, reader.header);			
-				int columnIndex = reader.getColumnIndex(column); //index of column value want
-				reader.close();
-				for (Individual person : people) {
-				CSVReader personReader = new CSVReader(file);
-				Map<Integer, String> indexToValue = new HashMap<>(); //index of dep cols and what vals looking for
-				Map<Column, String> currentValues = person.getValues();
-				for (Column d : dependencies) {
-					int index = personReader.getColumnIndex(d);
-					indexToValue.put(index, currentValues.get(d));
-				}
-				String value = personReader.findStaticValue(indexToValue, columnIndex); //index to val at least here fix
-				person.setValue(column, value);
-				personReader.close();
-				}				
+			else if (source.equals(Source.DEP_STATIC)) { 
+				sim = new DepStaticSim();
+				sim.simulate(menu, column, people, allColumns);
 			} 
 			else if (source.equals(Source.DEP_DATE)) {
-				File file = menu.getFile();
-				CSVReader reader = new CSVReader(file);
-				System.out.println("Please enter the name of the column with the probabilities for the "
-						+ "dependency");
-				Column probColumn = menu.getColumn(reader.header);
-				System.out.println("Please enter the name of the column with the values for the dependency");
-				Column valColumn = menu.getColumn(reader.header);
-				int format = menu.getDataFormat();
-				if (format == 1) {
-					reader.parseProbs(valColumn, probColumn);
-				}
-				else { //== 2
-					reader.parseFreqs(valColumn, probColumn);
-				}
-				for (Individual person : people) {
-					String range = reader.calculate();
-					String[] ends = range.split("-"); //get range
-					int start = Integer.parseInt(ends[0]);
-					int end = Integer.parseInt(ends[1]);	
-					int randomDay = ThreadLocalRandom.current().nextInt(1, 366);
-					int randomAge = ThreadLocalRandom.current().nextInt(start, end + 1);	
-					Calendar calendar = Calendar.getInstance();
-					int year = Calendar.getInstance().get(Calendar.YEAR);
-					randomAge = year - randomAge; //get birth year
-					calendar.set(Calendar.DAY_OF_YEAR, randomDay);
-					calendar.set(Calendar.YEAR, randomAge);
-					Date date = calendar.getTime();
-					SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");				
-					String dob = sdf.format(date);
-					person.setValue(column, dob);
-				}
-				reader.close();								
+				sim = new DepDateSim();
+				sim.simulate(menu, column, people, allColumns);
 			}
 			else if (source.equals(Source.RANDOM)) {
-				Source randSource = menu.getRandom();
-				if (randSource.equals(Source.RAND_UUID)) {
-					for (Individual person : people) {
-						person.setValue(column, UUID.randomUUID().toString());
-					}					
-				}
-				else if (randSource.equals(Source.RAND_NUMBER)) {
-					for (Individual person : people) {
-						person.setValue(column, "" + Math.random()); 
-					}
-					
-				} 
-				else if (randSource.equals(Source.RAND_OFFSET_NUM)) {
-					int count = people.size();	
-					int offset = ThreadLocalRandom.current().nextInt(0, count + 1); 
-					System.out.println("Please input starting value (ie '1' or '10000000')");
-					long start = (long) menu.getNum();
-					long assign = start + offset; //first num to assign
-					for (Individual person : people) {
-						person.setValue(column, assign + ""); 
-						assign++;
-						if (assign >= count + start) assign = start; //continue at first value
-					}
-				} 
-				else if (randSource.equals(Source.SEQUENTIAL_LINE)) {
-					File file = menu.getFile();				
-					CSVReader reader = new CSVReader(file);
-					System.out.println("Please enter the column name with the values for " + column.datatype);
-					Column seqColumn = menu.getColumn(reader.header);
-					int colIndex = reader.getColumnIndex(seqColumn);
-					for (Individual person : people) {
-						String[] parts = reader.sc.nextLine().split(",");
-						person.setValue(column, parts[colIndex]); //read from column in next line
-					}
-				}
-				else { //rand_lines
-					File file = menu.getFile();
-					CSVReader readerCount = new CSVReader(file);
-					int count = readerCount.countLines();
-					readerCount.close();	
-					System.out.println("Please enter the upper bound of the number "
-							+ "of values, starting"
-							+ " at 1, to generate for " + column.datatype);
-					int num = (int) menu.getNum(); //will often be 1
-					for (Individual person: people) {
-						int times = ThreadLocalRandom.current().nextInt(1, num + 1);					
-						String concat = "";
-						for (int i = 0; i < times; i++) {
-							CSVReader reader = new CSVReader(file);
-							concat = concat + reader.staticRead(column, count) + " "; //add next random value
-							reader.close();
-						}
-						person.setValue(column, concat);						
-					}
-				}
-				
-			}
-		
+				sim = new RandomSim();
+				sim.simulate(menu, column, people, allColumns);
+			}	
 		
 		}
 		
