@@ -149,7 +149,7 @@ public class Menu {
 		System.out.println("For generation from probability distributions, press 1");
 		System.out.println("For generation from probability distributions with previous value"
 				+ " dependencies, press 2");
-		System.out.println("For static generation with previous value dependencies, press 3");
+		System.out.println("For static generation with previous value dependency, press 3");
 		System.out.println("For random generation, press 4");
 		System.out.println("For generation from probability distributions, with "
 				+ "file choice dependencies on previous values, press 5");
@@ -297,7 +297,7 @@ public class Menu {
 	 * @return				the columns on which the input column's value depends
 	 */
 	public List<Column> getDependencies(Column column, List<Column> columns) {
-		System.out.println("For datatype " + column.datatype + ", please list all other datatypes"
+		System.out.println("For datatype " + column.datatype + ", please list the datatypes"
 				+ " on which its generation depends, comma separated.");
 		return getColumnRange(column, columns);
 	}
