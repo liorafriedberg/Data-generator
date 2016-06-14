@@ -10,6 +10,7 @@ public enum Source {
 	DEP_PROBS, //depends on prev value, prob distribution
 	DEP_STATIC, //depends on prev value, pre-determined	
 	DEP_DATE, //date dependent on range
+	MULTI_VALUE, //takes on multiple values per individual
 	RANDOM, //random generation
 		RAND_UUID, //uuid
 		RAND_LINE, //value from column and random line in file
