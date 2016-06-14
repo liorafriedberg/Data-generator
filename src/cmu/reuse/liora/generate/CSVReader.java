@@ -208,6 +208,28 @@ public class CSVReader {
 	}
 	
 	/**
+	 * @return		all values for the datatype concatenated and comma separated
+	 */
+	public String multiCalculate() { //pretty sure works fine
+		double random = Math.random();
+		String concat = "";
+		for (String s : probabilities.keySet()) {
+			double limit = probabilities.get(s);
+			if (random <= limit) {
+				concat = concat + s + ",";
+			}
+		}
+		if (concat.equals("")) {
+			return concat; //or could return null
+		}
+		else {
+			concat = concat.substring(0, concat.length() - 1);
+			return concat;
+		}
+		
+	}
+	
+	/**
 	 * set ranges on the data values for the dice roll
 	 */
 	public void bound() {
@@ -225,7 +247,7 @@ public class CSVReader {
 		for (Double d : secondaryMap.keySet()) {
 			secondaryMap.put(d, 1.0);
 		}
-	}		
+	}
 	
 	/**
 	 * also fills in a map of column to index
