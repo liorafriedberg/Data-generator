@@ -86,7 +86,7 @@ public class Menu {
 	public List<Column> getFinalColumns(List<Column> currentColumns) {
 		List<Column> finalColumns = new ArrayList<>();
 		System.out.println("I will now print all columns. Please rewrite the list with all columns"
-				+ " to generate, in the desired order, comma separated.");
+				+ " to generate including new columns, in the desired order, comma separated.");
 		for (Column column : currentColumns) {
 			System.out.println(column.datatype);
 		}
@@ -96,30 +96,32 @@ public class Menu {
 				input = userInput.next();
 				if (input != null) {
 					String[] tempColArr = input.split(",");
-					boolean mistake = false;
+					//boolean mistake = false;
 					for (int i = 0; i < tempColArr.length; i++) {
 						String columnStr = tempColArr[i];
-						boolean found = false;
-						for (Column column : currentColumns) {
-							if (column.datatype.equals(columnStr)) {
+						Column column = new Column(columnStr); //del if change
+						//boolean found = false;
+						//for (Column column : currentColumns) {
+						//	if (column.datatype.equals(columnStr)) {
 								finalColumns.add(column);
-								found = true;
-								break;
-							}
+							//	found = true;
+							//	break;
+							//}
 						}
-						if (!found) {
-							mistake = true;
-							break;
-						}
+						//if (!found) {
+						//	mistake = true;
+					//		break;
+					//	}
+					wait = false;
 					}
-					if (mistake) {
-						System.out.println("A column name did not match. Please try again.");						
-					finalColumns.clear();
-					} else {
-						wait = false;
-					}
+					//if (mistake) {
+					//	System.out.println("A column name did not match. Please try again.");						
+					//finalColumns.clear();
+				//	} else {
+						
+					//}
 				}
-			}		
+			//}		
 		return finalColumns;
 	}
 	
@@ -179,6 +181,7 @@ public class Menu {
 		System.out.println("For generation from probability distributions, with "
 				+ "file choice dependencies on previous values, press 5");
 		System.out.println("For date generation with range dependency, press 6");
+		System.out.println("For multi-value data generation, press 7");
 		boolean wait = true;
 		int input = 0;
 		while (wait) {
@@ -197,6 +200,8 @@ public class Menu {
 					source = Source.DEP_PROBS_FILE;
 				} else if (input == 6) {
 					source = Source.DEP_DATE;
+				} else if (input == 7) {
+					source = Source.MULTI_VALUE;
 				} else {
 					wait = true;
 					System.out.println("invalid option chosen. Please enter"
