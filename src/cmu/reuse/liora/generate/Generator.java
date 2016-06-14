@@ -94,7 +94,10 @@ public class Generator {
 			else if (source.equals(Source.RANDOM)) {
 				sim = new RandomSim();
 				sim.simulate(menu, column, people, allColumns);
-			}	
+			} else if (source.equals(Source.MULTI_VALUE)) {
+				sim = new MultiValueSim();
+				sim.simulate(menu, column, people, allColumns);
+			}
 		
 		}
 		
@@ -133,32 +136,18 @@ public class Generator {
 							}
 							addCreate = addCreate + col.datatype + " " + type + " NOT NULL, ";
 						}
-						//addCreate = addCreate + table + "ID BIGINT references " + table + "(" + key + "));";
-						addCreate = addCreate + newTable + "ID BIGINT, PRIMARY KEY(" + newTable + "ID));";
-						//now can't be null so may add primary key later
+						addCreate = addCreate.substring(0, addCreate.length() - 2) + ");";
+
 				System.out.println("addCreate: " + addCreate);
-				//error: I think need to make insurance_member_id "UNIQUE" then
-				//can delete other tables and comment this out and show then
 				stmt = c.prepareStatement(addCreate);
 				stmt.executeUpdate();
 				
 				String addInsert = "INSERT ";
-				for (Column col : newTableCols) { //these just the generated - also need id and foreign key
-					//Source source = menu.getSource(col); //will it always be a specific source?
-					//Simulator sim;
-					//if (source.equals(Source.PROBS)) { 
-					//	sim = new ProbSim();
-						//sim.simulate(menu, col, people, allColumns);
-						//could extend all so LIST of values
-						//also how many times, etc.
-				//	}
+				for (Column col : newTableCols) { //these all the cols?
+					//fill in here
 				}
-				//stmt = c.prepareStatement(addInsert);
-				//stmt.executeUpdate();			
-				//might make sense to add OTHER case where is a list of values or string is 
-				//concatenated
-				//how many assign? go through each disease?
-				//and then don't include those in all and just add them in here!! I think best
+				stmt = c.prepareStatement(addInsert);
+				stmt.executeUpdate();			
 					}
 				}
 			}
@@ -196,14 +185,9 @@ public class Generator {
 						subCreate = subCreate + col.datatype + " VARCHAR NOT NULL, ";
 					}
 				}
-				subCreate = subCreate + table + "ID BIGINT);"; //non null because don't know yet
-					//insert it hardcoded below in some kind of loop with update 
-					//then after all update it to be the primary key
-					//need any "foreign" key stuff?
-					//subCreate = subCreate + " PRIMARY KEY (" + table + "ID));"; //hardcoded a new primary key
-					
-					//or we could make insurance member id their primary key
-					//or keep their old id as their primary key - this way guaranteed to be able to hardcode
+				subCreate = subCreate.substring(0, subCreate.length() - 2) + ");";
+					//don't need primary or foreign keys in these tables
+
 				stmt = c.prepareStatement(subCreate);
 				stmt.executeUpdate();
 					
@@ -240,12 +224,12 @@ public class Generator {
 			c = DriverManager.getConnection("jdbc:postgresql://localhost:5432/microsim", "postgres", "microsim2016");
 			c.setAutoCommit(false);
 			
-			String create = "CREATE TABLE TOTAL("; //but don't want to recreate now so comment out
+			String create = "CREATE TABLE TOTAL("; //but don't want to recreate now so comment out or drop in cl
 			Map<Column, String> values = rows.get(0).getValues();
 			for (Column col : values.keySet()) {
 				try {
 					Integer.parseInt(values.get(col));
-					create = create + col.datatype + " BIGINT " + "NOT NULL, "; //since said would only be ints / strings. but date? so okay or other auto way?
+					create = create + col.datatype + " BIGINT " + "NOT NULL, ";
 				} catch(NumberFormatException e) {
 					create = create + col.datatype + " VARCHAR " + "NOT NULL, ";
 				}
