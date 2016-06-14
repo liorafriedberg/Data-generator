@@ -17,36 +17,6 @@ import java.util.Map;
 public class Generator {
 	//**note to reader: override menu calls in automenu, change back to menu for user interaction**	
 	
-	/*
-	 * then go through however many tables (user input - insurance) and assign diseases 
-	 * and prescriptions (and anything else) based on a distribution (or etc)
-	 * this data inserted into different table using the person's unique id since maybe multiple
-	 * records
-	 * -------------------------------------------------
-	 * 
-	 *  see if this is what comes out - then maybe clear from command line - DELETE FROM CUSTOMERS; and view this way too
-	 * 	insurance_member_id		VARCHAR		NOT NULL,
-	 * 	grocery_member_id		VARCHAR		NOT NULL
-	 * 	plan_number			BIGINT,	nn
-	 * 	dob				DATE, 	nn
-	 * 	address		VARCHAR,	nn
-	 * 	credit_card		INT,	nn
-	 * 	ad_keywords		VARCHAR,	nn
-	 * 	coupon_code		BIGINT,	nn
-	 * 	firstname		VARCHAR,	nn
-	 * 	lastname		VARCHAR,	nn
-	 * 	gender			VARCHAR,	nn
-	 * 	ethnicity		VARCHAR,	nn
-	 * 	ssn				BIGINT,	nn
-	 * 	zip				SMALLINT,	nn
-	 * 	id			BIGINT		NOT NULL,
-	 * 	city		VARCHAR,	nn
-	 * 	state		VARCHAR,	nn
-	 * PRIMARY KEY(id)
-	 * );
-	 * ---------------------------------------
-	 */
-	
 	/**
 	 * starts generation
 	 * @param args
@@ -101,7 +71,7 @@ public class Generator {
 		for (Column column : columns) {
 			Source source = menu.getSource(column); //ask user for how want to do it - in order
 			Simulator sim;
-			if (source.equals(Source.PROBS)) { //done with probs
+			if (source.equals(Source.PROBS)) {
 				sim = new ProbSim();
 				sim.simulate(menu, column, people, allColumns);
 			} 
@@ -131,8 +101,138 @@ public class Generator {
 		return people;
 	}
 	
-	public static void write(List<Individual> rows) {
+	//comment out for part working right now
+	/**
+	 * writes new tables related to current tables in db
+	 * @param rows		rows generated
+	 * @param c			connection to db
+	 * @param tables	all new tables in db
+	 */
+	public static void addDbCols(List<Individual> rows, Connection c, String[] tables) {
 		Menu menu = new Menu();
+		PreparedStatement stmt = null;
+		try {
+			for (int i = 0; i < tables.length; i++) {
+				String table = tables[i];
+				boolean choice = menu.getChoice(table); //insurance
+				if (choice) {
+					//medical records
+					String[] addTables = menu.getTables();
+					for (int j = 0; j < addTables.length; j++) {	
+						String newTable = addTables[j];
+						List<Column> newTableCols = menu.getTableCols(newTable); //disease, prescription
+						String key = menu.getKey(newTable);
+						String addCreate = "CREATE TABLE " + newTable + "( ";
+						for (Column col : newTableCols) {
+							String type = menu.getType(col); //automate if can
+							if (type.equals("number")) {
+								type = "BIGINT";
+							} 
+							else {
+								type = "VARCHAR";
+							}
+							addCreate = addCreate + col.datatype + " " + type + " NOT NULL, ";
+						}
+						//addCreate = addCreate + table + "ID BIGINT references " + table + "(" + key + "));";
+						addCreate = addCreate + newTable + "ID BIGINT, PRIMARY KEY(" + newTable + "ID));";
+						//now can't be null so may add primary key later
+				System.out.println("addCreate: " + addCreate);
+				//error: I think need to make insurance_member_id "UNIQUE" then
+				//can delete other tables and comment this out and show then
+				stmt = c.prepareStatement(addCreate);
+				stmt.executeUpdate();
+				
+				String addInsert = "INSERT ";
+				for (Column col : newTableCols) { //these just the generated - also need id and foreign key
+					//Source source = menu.getSource(col); //will it always be a specific source?
+					//Simulator sim;
+					//if (source.equals(Source.PROBS)) { 
+					//	sim = new ProbSim();
+						//sim.simulate(menu, col, people, allColumns);
+						//could extend all so LIST of values
+						//also how many times, etc.
+				//	}
+				}
+				//stmt = c.prepareStatement(addInsert);
+				//stmt.executeUpdate();			
+				//might make sense to add OTHER case where is a list of values or string is 
+				//concatenated
+				//how many assign? go through each disease?
+				//and then don't include those in all and just add them in here!! I think best
+					}
+				}
+			}
+			stmt.close();
+			c.commit();
+			c.close();	
+		} catch(Exception e) {
+			e.printStackTrace();
+	         System.err.println(e.getClass().getName() + ": " + e.getMessage());
+	         System.exit(0);
+		}
+				
+	}	
+	
+	/**
+	 * writes new tables to break up total data in db
+	 * @param rows		the data generated
+	 * @param c			Connection to db
+	 */
+	public static void subTables(List<Individual> rows, Connection c) {
+		Menu menu = new Menu();
+		PreparedStatement stmt = null;
+		try {
+			String[] tables = menu.getTables();
+			for (int i = 0; i < tables.length; i++) {
+				String table = tables[i];
+				String subCreate = "CREATE TABLE " + table + "( ";
+				List<Column> cols = menu.getTableCols(table);
+				Map<Column, String> sampleVals = rows.get(0).getValues();
+				for (Column col : cols) {
+					try {
+						Integer.parseInt(sampleVals.get(col));
+						subCreate = subCreate + col.datatype + " BIGINT NOT NULL, ";
+					} catch (NumberFormatException e) {
+						subCreate = subCreate + col.datatype + " VARCHAR NOT NULL, ";
+					}
+				}
+				subCreate = subCreate + table + "ID BIGINT);"; //non null because don't know yet
+					//insert it hardcoded below in some kind of loop with update 
+					//then after all update it to be the primary key
+					//need any "foreign" key stuff?
+					//subCreate = subCreate + " PRIMARY KEY (" + table + "ID));"; //hardcoded a new primary key
+					
+					//or we could make insurance member id their primary key
+					//or keep their old id as their primary key - this way guaranteed to be able to hardcode
+				stmt = c.prepareStatement(subCreate);
+				stmt.executeUpdate();
+					
+				String subInsert = "INSERT INTO " + table + 
+										" SELECT"; 
+				for (Column col : cols) {
+					subInsert = subInsert + " " + col.datatype + ",";
+				}
+				subInsert = subInsert.substring(0, subInsert.length() - 1); 
+				subInsert = subInsert + " FROM TOTAL;";
+					
+				stmt = c.prepareStatement(subInsert);
+				stmt.executeUpdate();				
+			}
+			stmt.close();
+			addDbCols(rows, c, tables);
+		}	catch(Exception e) {
+				e.printStackTrace();
+				System.err.println(e.getClass().getName() + ": " + e.getMessage());
+				System.exit(0);
+			}				
+	} 			
+
+	//may extract as own class
+	/**
+	 * writes generated data to database
+	 * @param rows		all rows generated
+	 */
+	public static void write(List<Individual> rows) {
 		Connection c = null;
 		PreparedStatement stmt = null;
 		try {
@@ -140,8 +240,7 @@ public class Generator {
 			c = DriverManager.getConnection("jdbc:postgresql://localhost:5432/microsim", "postgres", "microsim2016");
 			c.setAutoCommit(false);
 			
-			 Iterator<Column> vs = rows.get(0).getValues().keySet().iterator();
-			String create = "CREATE TABLE TOTAL(";
+			String create = "CREATE TABLE TOTAL("; //but don't want to recreate now so comment out
 			Map<Column, String> values = rows.get(0).getValues();
 			for (Column col : values.keySet()) {
 				try {
@@ -170,54 +269,14 @@ public class Generator {
 				insert = insert.substring(0, insert.length() - 2); //cut off last , 
 				insert = insert + ");"; 
 				stmt = c.prepareStatement(insert);
-				stmt.executeUpdate();
-			}
-			
-			
-			
-			String[] tables = menu.getTables();
-			for (int i = 0; i < tables.length; i++) {
-				String table = tables[i];
-				String subCreate = "CREATE TABLE " + table + "( ";
-				List<Column> cols = menu.getTableCols(table);
-				Map<Column, String> sampleVals = rows.get(0).getValues();
-				for (Column col : cols) {
-					try {
-						Integer.parseInt(sampleVals.get(col));
-						subCreate = subCreate + col.datatype + " BIGINT NOT NULL, ";
-					} catch (NumberFormatException e) {
-						subCreate = subCreate + col.datatype + " VARCHAR NOT NULL, ";
-					}
-				}
-				subCreate = subCreate + table + "ID BIGINT);"; //this is the new table row number MAKE NON NULL AGAIN? 
-				//insert it hardcoded below but then how change primary key?
-				//subCreate = subCreate + " PRIMARY KEY (" + table + "ID));"; //hardcoded a new primary key
-				// idea: just instead create it and then insert just the primary key, and then the from other table
-				//but just then have to make key non-null
-
-				stmt = c.prepareStatement(subCreate);
-				stmt.executeUpdate();
-				
-				String subInsert = "INSERT INTO " + table + 
-									" SELECT"; 
-				for (Column col : cols) {
-					subInsert = subInsert + " " + col.datatype + ",";
-				}
-				subInsert = subInsert.substring(0, subInsert.length() - 1); // HOW SEE IF SHOWING UP? - am on the last statement though
-				subInsert = subInsert + " FROM TOTAL;";
-				System.out.println("subInsert: " + subInsert);
-				
-				stmt = c.prepareStatement(subInsert);
-				stmt.executeUpdate();				
+				stmt.executeUpdate();			
 			}
 			stmt.close();
-			c.commit();
-			c.close();
+			subTables(rows, c);
 		} catch(Exception e) {
 			e.printStackTrace();
 	         System.err.println(e.getClass().getName() + ": " + e.getMessage());
 	         System.exit(0);
-		}			
-	}
-
+		}				
+	}						
 }
