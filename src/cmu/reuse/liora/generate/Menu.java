@@ -128,14 +128,39 @@ public class Menu {
 	 */
 	public long getNum() {
 		boolean wait = true;
+		String input = null;
 		long num = 0;
 		while (wait) {
-			num = userInput.nextLong();
-			if (num > 0) {
-				wait = false;
-			}
+			input = userInput.next();
+			try {
+				num = Long.parseLong(input);
+				return num;
+			} catch (NumberFormatException e) {
+				System.out.println("Invalid input. Please try again.");
+			}	
 		}
 		return num;
+	}
+	
+	/**
+	 * @param table		Table name
+	 * @return
+	 */
+	public boolean getChoice(String table) {
+		System.out.println("For table " + table + ", would you like to extend? Please"
+				+ " input 'yes' or 'no'.");
+		boolean wait = true;
+		String input = null;
+		while (wait) {
+			input = userInput.next();
+			if (input.equals("yes") || input.equals("no")) {
+				wait = false;
+			}
+			else {
+				System.out.println("Please input 'yes' or 'no'.");
+			}
+		}
+		return (input.equals("yes"));
 	}
 	
 	
@@ -388,6 +413,19 @@ public class Menu {
 		return null;
 	}
 	
+	public String getKey(String table) {
+		System.out.println("Please input the foreign key for table " + table + ".");
+		boolean wait = true;
+		String input = null;
+		while (wait) {
+			input = userInput.next();
+			if (input != null) {
+				return input;
+			}
+		}
+		return null;
+	}
+	
 	/**
 	 * @param table		the table name
 	 * @return			the columns for the table
@@ -403,12 +441,29 @@ public class Menu {
 				wait = false;
 				String[] parts = input.split(",");
 				for (int i = 0; i < parts.length; i++) {
-					Column col = new Column(parts[i]); //ADD CHECK FOR MISTAKE
+					Column col = new Column(parts[i]); //add check for mistake
 					cols.add(col);
 				}
 			}
 		}
 		return cols;
+	}
+	
+	public String getType(Column c) {
+		System.out.println("For column " + c.datatype + ", please input its datatype, 'number' or 'text'.");
+		boolean wait = true;
+		String input = null;
+		while (wait) {
+			input = userInput.next();
+			if (input != null) {
+				if (input.equals("number") || input.equals("text")) {
+					return input;
+				} else {
+					System.out.println("Please input 'number' or 'text'.");
+				}
+			}
+		}
+		return null;
 	}
 
 }
