@@ -371,5 +371,44 @@ public class Menu {
 			}
 		}
 	}
+	
+	/**
+	 * @return		array of the new table names
+	 */
+	public String[] getTables() {
+		System.out.println("Please input all table names you would like to create for this data, comma separated.");
+		boolean wait = true;
+		String input = null;
+		while (wait) {
+			input = userInput.next();
+			if (input != null) {
+				return input.split(",");
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * @param table		the table name
+	 * @return			the columns for the table
+	 */
+	public List<Column> getTableCols(String table) {
+		System.out.println("Please input a list of all columns for table " + table + ", comma separated.");
+		boolean wait = true;
+		String input = null;
+		List<Column> cols = new ArrayList<>();
+		while (wait) {
+			input = userInput.next();
+			if (input != null) {
+				wait = false;
+				String[] parts = input.split(",");
+				for (int i = 0; i < parts.length; i++) {
+					Column col = new Column(parts[i]); //ADD CHECK FOR MISTAKE
+					cols.add(col);
+				}
+			}
+		}
+		return cols;
+	}
 
 }
