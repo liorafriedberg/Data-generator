@@ -11,17 +11,20 @@ public class RandomSim implements Simulator {
 	public void simulate(Menu menu, Column column, List<Individual> people, List<Column> allColumns) {
 		Source randSource = menu.getRandom();
 		if (randSource.equals(Source.RAND_UUID)) {
+			column.source = Source.RAND_UUID;
 			for (Individual person : people) {
 				person.setValue(column, UUID.randomUUID().toString());
 			}					
 		}
 		else if (randSource.equals(Source.RAND_NUMBER)) {
+			column.source = Source.RAND_NUMBER;
 			for (Individual person : people) {
 				person.setValue(column, "" + Math.random()); 
 			}
 			
 		} 
 		else if (randSource.equals(Source.RAND_OFFSET_NUM)) {
+			column.source = Source.RAND_OFFSET_NUM;
 			int count = people.size();	
 			int offset = ThreadLocalRandom.current().nextInt(0, count + 1); 
 			System.out.println("Please input starting value (ie '1' or '10000000')");
@@ -34,6 +37,7 @@ public class RandomSim implements Simulator {
 			}
 		} 
 		else if (randSource.equals(Source.SEQUENTIAL_LINE)) {
+			column.source = Source.SEQUENTIAL_LINE;
 			File file = menu.getFile();				
 			CSVReader reader = new CSVReader(file);
 			System.out.println("Please enter the column name with the values for " + column.datatype);
@@ -45,6 +49,7 @@ public class RandomSim implements Simulator {
 			}
 		}
 		else { //rand_lines
+			column.source = Source.RAND_LINE;
 			File file = menu.getFile();
 			CSVReader readerCount = new CSVReader(file);
 			int count = readerCount.countLines();
