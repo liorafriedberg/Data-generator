@@ -14,6 +14,7 @@ public class Column {
 	 */
 	String datatype;
 	String label;
+	Source source;
 	
 	public Column() {
 	}
