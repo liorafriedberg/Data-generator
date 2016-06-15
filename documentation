@@ -40,3 +40,8 @@ id: assigned sequentially
 city: statically assigned depending on zip value using zip.csv
 
 state: statically assigned depending on zip value using zip.csv
+
+disease: multivalue, from file I made disease.csv. Probability of each disease based on 
+dependencies and assign to individual per their previous values and a die roll.
+
+prescription: assigned based off disease
