@@ -42,6 +42,10 @@ public class DepDateSim implements Simulator {
 			SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");				
 			String dob = sdf.format(date);
 			person.setValue(column, dob);
+			Column ageRange = new Column("range");
+			Column age = new Column("age");
+			person.setValue(ageRange, range); 
+			person.setValue(age, "" + randomAge);
 		}
 		reader.close();								
 	
