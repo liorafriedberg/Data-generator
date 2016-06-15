@@ -103,7 +103,7 @@ public class Menu {
 						//boolean found = false;
 						//for (Column column : currentColumns) {
 						//	if (column.datatype.equals(columnStr)) {
-								finalColumns.add(column);
+								finalColumns.add(column); //only do this if don't have yet
 							//	found = true;
 							//	break;
 							//}
@@ -452,23 +452,6 @@ public class Menu {
 			}
 		}
 		return cols;
-	}
-	
-	public String getType(Column c) {
-		System.out.println("For column " + c.datatype + ", please input its datatype, 'number' or 'text'.");
-		boolean wait = true;
-		String input = null;
-		while (wait) {
-			input = userInput.next();
-			if (input != null) {
-				if (input.equals("number") || input.equals("text")) {
-					return input;
-				} else {
-					System.out.println("Please input 'number' or 'text'.");
-				}
-			}
-		}
-		return null;
 	}
 
 }
