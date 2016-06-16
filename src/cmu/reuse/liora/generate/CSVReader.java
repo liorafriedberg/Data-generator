@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.concurrent.ThreadLocalRandom;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,29 +58,38 @@ public class CSVReader {
 		sc.close();
 	}
 	
+	
+	public Map<Map<Column, String>, Map<Column, String>> findDepValues(Map<Integer, Column> indexToDep, Map<Integer, Column> indexToP) {
+		Map<Map<Column, String>, Map<Column, String>> saveRows = new HashMap<>();
+		while (sc.hasNextLine()) {
+			String line = sc.nextLine();
+			String[] parts = line.split(",");
+			Map<Column, String> deps = new HashMap<>();
+			for (int i : indexToDep.keySet()) {
+				deps.put(indexToDep.get(i), parts[i]);
+			}
+			Map<Column, String> vals = new HashMap<>();
+			for (int i : indexToP.keySet()) {
+				vals.put(indexToP.get(i), parts[i]);
+			}
+			saveRows.put(deps, vals);
+		}
+		return saveRows;
+	}
+	
 	/**
 	 * parse frequencies into percentages from file based on row
 	 * @param indexToValue		indices to values to match on
 	 * @param indexToPotential	indices to columns for the distribution
 	 */
-	public void parseFreqsDep(Map<Integer, String> indexToValue, Map<Integer, Column> indexToPotential) {		
+	public void parseFreqsDep(Map<Column, String> pVals) {
 		probabilities.clear();
 		bounds.clear();
-		while (sc.hasNextLine()) {
-			String line = sc.nextLine();
-			String[] parts = line.split(",");
-			boolean found = true;
-			for (int index : indexToValue.keySet()) {
-				if (!parts[index].equals(indexToValue.get(index))) { //look for line in file
-					found = false;
-					break;
-				}
-			}
-			if (found) {
+
 				double totalFreq = 0.0;
-				for (Integer index : indexToPotential.keySet()) {
-					String label = indexToPotential.get(index).label;
-					double freq = Double.parseDouble(parts[index]);
+				for (Column c : pVals.keySet()) {
+					String label = c.label;
+					double freq = Double.parseDouble(pVals.get(c));
 					totalFreq = totalFreq + freq;
 					probabilities.put(label, freq); //put in frequencies from row
 				}
@@ -89,9 +99,8 @@ public class CSVReader {
 					probabilities.put(value, currFreq); 
 				}							
 				bound();
-				break;
-			}
-		}
+			
+		
 	}
 	
 	/**
@@ -99,30 +108,19 @@ public class CSVReader {
 	 * @param indexToValue		indices to values to match on
 	 * @param indexToPotential		indices to columns for the distribution
 	 */
-	public void parseProbsDep(Map<Integer, String> indexToValue, Map<Integer, Column> indexToPotential) {
+	public void parseProbsDep(Map<Column, String> pVals) {
 		probabilities.clear(); 
 		bounds.clear();
-		while (sc.hasNextLine()) {
-			String line = sc.nextLine();
-			String[] parts = line.split(",");
-			boolean found = true;
-			for (int index : indexToValue.keySet()) {
-				if (!parts[index].equals(indexToValue.get(index))) { //look for the line in file
-					found = false;
-					break;
-				}
-			}
-			if (found) {
-				for (Integer index : indexToPotential.keySet()) {
-					String label = indexToPotential.get(index).label; //matching label
-					double prob = Double.parseDouble(parts[index]); //probabilities directly in the row
+
+				for (Column c : pVals.keySet()) {
+					String label = c.label; //matching label
+					double prob = Double.parseDouble(pVals.get(c)); //probabilities directly in the row
 					probabilities.put(label, prob);
 				}
 			
 				bound();
-				break;
-			}
-		}
+
+		
 	}
 	
 	/**
@@ -130,12 +128,16 @@ public class CSVReader {
 	 * @param valIndex		index of the column with the value to return
 	 * @return				map from column indices to their values to the possible value for each line
 	 */
-	public Map<String, String> findStaticValue(int depIndex, int valIndex) {	 //map from zip to city	
-			Map<String, String> depToVal = new HashMap<>();
+	public Map<Map<Column, String>, String> findStaticValue(Map<Integer, Column> indexToDep, int valIndex) {
+		Map<Map<Column, String>, String> depToVal = new HashMap<>();	
 		while (sc.hasNextLine()) {
+			Map<Column, String> depVals = new HashMap<>();
 			String line = sc.nextLine();
 			String[] parts = line.split(",");
-			depToVal.put(parts[depIndex], parts[valIndex]);
+			for (Integer i : indexToDep.keySet()) {
+				depVals.put(indexToDep.get(i), parts[i]);
+			}
+			depToVal.put(depVals, parts[valIndex]);
 		}
 		return depToVal;
 	}
