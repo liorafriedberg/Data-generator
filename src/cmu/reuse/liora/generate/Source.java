@@ -11,6 +11,7 @@ public enum Source {
 	DEP_STATIC, //depends on prev value, pre-determined	
 	DEP_DATE, //date dependent on range
 	MULTI_VALUE, //takes on multiple values per individual
+	MULTI_VALUE_2, //multiple values based off multiple values
 	RANDOM, //random generation
 		RAND_UUID, //uuid
 		RAND_LINE, //value from column and random line in file
