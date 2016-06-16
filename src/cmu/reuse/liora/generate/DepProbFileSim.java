@@ -11,21 +11,21 @@ public class DepProbFileSim implements Simulator {
 	@Override
 	public void simulate(Menu menu, Column column, List<Individual> people, List<Column> allColumns) {
 		System.out.println("Please enter the datatype on which file choice depends");
-		Column depColumn = menu.getColumn(allColumns);
+		Column depColumn = menu.getDepColumn(allColumns, column);
 		 Set<Column> check = people.get(0).getValues().keySet();
 		 if (!check.contains(depColumn)) {
 				throw new IllegalArgumentException("Chose a dependency not yet assigned");
 			}
-		Map<String, File> valueToFile = menu.getFileDeps();
+		Map<String, File> valueToFile = menu.getFileDeps(column);
 		Map<File, CSVReader> fileToReader = new HashMap<>();
 		for (File f : valueToFile.values()) {
 			CSVReader reader = new CSVReader(f);
 			System.out.println("For file " + f.getName() + " please enter the following");
 			System.out.println("Please enter the name of the column with the probabilities");
-			Column probColumn = menu.getColumn(reader.header);
+			Column probColumn = menu.getProbColumn(reader.header, column);
 			System.out.println("Please enter the name of the column with the possible values.");	
-			Column valColumn = menu.getColumn(reader.header);
-			int format = menu.getDataFormat(); //1 is percentage 2 is freq
+			Column valColumn = menu.getValueColumn(reader.header, column);
+			int format = menu.getDataFormat(column); //1 is percentage 2 is freq
 			if (format == 1) {
 				reader.parseProbs(valColumn, probColumn);
 			} else {
