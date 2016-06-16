@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class DepProbSim implements Simulator {
 	 
@@ -23,9 +24,13 @@ public class DepProbSim implements Simulator {
 			int index = reader.getColumnIndex(col);
 			indexToP.put(index, col);
 		} //index to potential has the potential values mapped with their indices
+		Set<Column> check = people.get(0).getValues().keySet();
 		for (Column d : dependencies) {
 			int index = reader.getColumnIndex(d);
 			indexToDep.put(index, d);
+			if (!check.contains(d)) {
+				throw new IllegalArgumentException("Chose a dependency not yet assigned");
+			} 	
 		}	
 		Map<Map<Column, String>, Map<Column, String>> save = reader.findDepValues(indexToDep, indexToP);
 		reader.close();
