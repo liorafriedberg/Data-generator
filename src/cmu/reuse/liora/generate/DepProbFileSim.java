@@ -18,11 +18,13 @@ public class DepProbFileSim implements Simulator {
 			System.out.println("For file " + f.getName() + " please enter the following");
 			System.out.println("Please enter the name of the column with the probabilities");
 			Column probColumn = menu.getColumn(reader.header);
+			System.out.println("Please enter the name of the column with the possible values.");	
+			Column valColumn = menu.getColumn(reader.header);
 			int format = menu.getDataFormat(); //1 is percentage 2 is freq
 			if (format == 1) {
-				reader.parseProbs(column, probColumn);
+				reader.parseProbs(valColumn, probColumn);
 			} else {
-				reader.parseFreqs(column, probColumn);
+				reader.parseFreqs(valColumn, probColumn);
 			}
 			fileToReader.put(f, reader);			
 		}		
