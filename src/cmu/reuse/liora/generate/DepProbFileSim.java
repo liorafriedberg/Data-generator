@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class DepProbFileSim implements Simulator {
 
@@ -11,6 +12,10 @@ public class DepProbFileSim implements Simulator {
 	public void simulate(Menu menu, Column column, List<Individual> people, List<Column> allColumns) {
 		System.out.println("Please enter the datatype on which file choice depends");
 		Column depColumn = menu.getColumn(allColumns);
+		 Set<Column> check = people.get(0).getValues().keySet();
+		 if (!check.contains(depColumn)) {
+				throw new IllegalArgumentException("Chose a dependency not yet assigned");
+			}
 		Map<String, File> valueToFile = menu.getFileDeps();
 		Map<File, CSVReader> fileToReader = new HashMap<>();
 		for (File f : valueToFile.values()) {
