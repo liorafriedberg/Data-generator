@@ -12,7 +12,7 @@ public class DepProbSim implements Simulator {
 	 
 	@Override
 	public void simulate(Menu menu, Column column, List<Individual> people, List<Column> cols) {
-		File file = menu.getFile();								
+		File file = menu.getFile(column);								
 		CSVReader reader = new CSVReader(file);
 		List<Column> dependencies = menu.getDependencies(column, reader.header);		
 		List<Column> potentialValues = menu.getPotentialValues(column, reader.header);				
@@ -34,7 +34,7 @@ public class DepProbSim implements Simulator {
 		}	
 		Map<Map<Column, String>, Map<Column, String>> save = reader.findDepValues(indexToDep, indexToP);
 		reader.close();
-		int format = menu.getDataFormat();		
+		int format = menu.getDataFormat(column);		
 		
 		for (Individual person : people) {
 			Map<Column, String> currentValues = person.getValues();
