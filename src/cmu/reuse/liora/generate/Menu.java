@@ -1,6 +1,7 @@
 package cmu.reuse.liora.generate;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,6 +16,10 @@ public class Menu {
 	
 	public Menu() {
 		userInput = new Scanner(System.in);
+	}
+	
+	public void close() throws IOException {
+		userInput.close();
 	}
 	
 	/**
@@ -52,11 +57,24 @@ public class Menu {
 		return files;
 	}
 	
+	public Column getProbColumn(List<Column> columns, Column c) {
+		return getColumn(columns);
+	}
+	
+	public Column getValueColumn(List<Column> columns, Column c) {
+		return getColumn(columns);
+	}
+	
+	public Column getDepColumn(List<Column> columns, Column c) {
+		return getColumn(columns);
+	}
+	
+	
 	/**
 	 * @param columns		all columns from files
 	 * @return				column with the probability distribution
 	 */
-	public Column getColumn(List<Column> columns) { 
+	public Column getColumn(List<Column> columns) {
 		String input = null;
 		boolean wait = true;
 		Column probColumn = null;
@@ -107,6 +125,13 @@ public class Menu {
 		return finalColumns;
 	}
 	
+	public long getOffset(Column c) {
+		return getNum();
+	}
+	
+	public int getBound(Column c) {
+		return (int) getNum();
+	}
 	/**
 	 * @return		number from user
 	 */
@@ -200,7 +225,7 @@ public class Menu {
 	/**
 	 * @return		source within the randomized source options
 	 */
-	public Source getRandom() {
+	public Source getRandom(Column c) {
 		Source source = null;
 		System.out.println("Please choose a form of randomization, by typing 'UUID', 'rand_value_from_list', "
 				+ "'offset_num', 'seq_value', or 'number'");
@@ -233,7 +258,7 @@ public class Menu {
 	/**
 	 * @return		file from user
 	 */
-	public File getFile() {
+	public File getFile(Column c) {
 		System.out.println("Please enter filename for data generation");
 		boolean wait = true;
 		String input = null;
@@ -255,7 +280,7 @@ public class Menu {
 	/**
 	 * @return		percentage or frequency data format
 	 */
-	public int getDataFormat() {
+	public int getDataFormat(Column c) {
 		System.out.println("Please enter the data format. For percentages, press 1. For frequencies, press 2.");
 		int input = 0;
 		boolean wait = true;
@@ -272,7 +297,7 @@ public class Menu {
 	/**
 	 * @return		a map from value to file for dependent datatype generation
 	 */
-	public Map<String, File> getFileDeps() {
+	public Map<String, File> getFileDeps(Column c) {
 		System.out.println("Please enter all value-file pairs. Format value:file and comma"
 				+ " separated");
 		Map<String, File> valueToFile = new HashMap<>();
