@@ -14,33 +14,39 @@ public class MultiValueSim implements Simulator {
 		List<Column> dependencies = menu.getDependencies(column, reader.header);
 		List<Column> potentialValues = menu.getPotentialValues(column, reader.header);	
 		menu.getLabels(potentialValues); //these columns now have the label variable
-		Map<Integer, Column> indexToPotential = new HashMap<>();
+		Map<Integer, Column> indexToP = new HashMap<>();
+		Map<Integer, Column> indexToDep = new HashMap<>();
 		for (Column col : potentialValues) {
 			int index = reader.getColumnIndex(col);
-			indexToPotential.put(index, col);
+			indexToP.put(index, col);
 		} //index to potential has the potential values mapped with their indices
+		for (Column d : dependencies) {
+			int index = reader.getColumnIndex(d);
+			indexToDep.put(index, d);
+		}
+		Map<Map<Column, String>, Map<Column, String>> save = reader.findDepValues(indexToDep, indexToP);
 		reader.close();
 		int format = menu.getDataFormat();
 			
 		for (Individual person : people) {
-			CSVReader pReader = new CSVReader(file);
-			Map<Integer, String> indexToValue = new HashMap<>(); //index of dep cols and what vals looking for
 			Map<Column, String> currentValues = person.getValues();
+			Map<Column, String> currentDepVals = new HashMap<>();
 			for (Column d : dependencies) {
-				int index = pReader.getColumnIndex(d);
-				indexToValue.put(index, currentValues.get(d));
-			}
+				currentDepVals.put(d, currentValues.get(d));
+			}		
+			Map<Column, String> pVals = save.get(currentDepVals);
+			CSVReader pReader = new CSVReader(file);
+			
 			if (format == 1) {
-				pReader.parseProbsDep(indexToValue, indexToPotential);
+				pReader.parseProbsDep(pVals);
 			} 
 			else { //== 2
-				pReader.parseFreqsDep(indexToValue, indexToPotential);
+				pReader.parseFreqsDep(pVals);
 			}									
 			person.setValue(column, pReader.multiCalculate()); //this one line is only difference
 			//can extract this
 			pReader.close();
 		}
-	
-	}
 
+	} 
 }
