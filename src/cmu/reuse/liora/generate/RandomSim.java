@@ -9,7 +9,7 @@ public class RandomSim implements Simulator {
 
 	@Override
 	public void simulate(Menu menu, Column column, List<Individual> people, List<Column> allColumns) {
-		Source randSource = menu.getRandom();
+		Source randSource = menu.getRandom(column);
 		if (randSource.equals(Source.RAND_UUID)) {
 			column.source = Source.RAND_UUID;
 			for (Individual person : people) {
@@ -28,7 +28,7 @@ public class RandomSim implements Simulator {
 			int count = people.size();	
 			int offset = ThreadLocalRandom.current().nextInt(0, count + 1); 
 			System.out.println("Please input starting value (ie '1' or '10000000')");
-			long start = (long) menu.getNum();
+			long start = (long) menu.getOffset(column);
 			long assign = start + offset; //first num to assign
 			for (Individual person : people) {
 				person.setValue(column, assign + ""); 
@@ -38,10 +38,10 @@ public class RandomSim implements Simulator {
 		} 
 		else if (randSource.equals(Source.SEQUENTIAL_LINE)) {
 			column.source = Source.SEQUENTIAL_LINE;
-			File file = menu.getFile();				
+			File file = menu.getFile(column);				
 			CSVReader reader = new CSVReader(file);
 			System.out.println("Please enter the column name with the values for " + column.datatype);
-			Column seqColumn = menu.getColumn(reader.header);
+			Column seqColumn = menu.getValueColumn(reader.header, column);
 			int colIndex = reader.getColumnIndex(seqColumn);
 			for (Individual person : people) {
 				String[] parts = reader.sc.nextLine().split(",");
@@ -50,16 +50,16 @@ public class RandomSim implements Simulator {
 		}
 		else { //rand_lines
 			column.source = Source.RAND_LINE;
-			File file = menu.getFile();
+			File file = menu.getFile(column);
 			CSVReader readerCount = new CSVReader(file);
 			int count = readerCount.countLines();
 			System.out.println("Please enter the name of the column with the possible values.");	
-			Column valColumn = menu.getColumn(readerCount.header);
+			Column valColumn = menu.getValueColumn(readerCount.header, column);
 			readerCount.close();	
 			System.out.println("Please enter the upper bound of the number "
 					+ "of values, starting"
 					+ " at 1, to generate for " + column.datatype);
-			int num = (int) menu.getNum(); //will often be 1
+			int num = (int) menu.getBound(column); //will often be 1
 			for (Individual person: people) {
 				int times = ThreadLocalRandom.current().nextInt(1, num + 1);					
 				String concat = "";
