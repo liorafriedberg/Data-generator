@@ -96,37 +96,19 @@ public class Menu {
 				input = userInput.next();
 				if (input != null) {
 					String[] tempColArr = input.split(",");
-					//boolean mistake = false;
 					for (int i = 0; i < tempColArr.length; i++) {
 						String columnStr = tempColArr[i];
-						Column column = new Column(columnStr); //del if change
-						//boolean found = false;
-						//for (Column column : currentColumns) {
-						//	if (column.datatype.equals(columnStr)) {
+						Column column = new Column(columnStr);
 								finalColumns.add(column); //only do this if don't have yet
-							//	found = true;
-							//	break;
-							//}
 						}
-						//if (!found) {
-						//	mistake = true;
-					//		break;
-					//	}
 					wait = false;
 					}
-					//if (mistake) {
-					//	System.out.println("A column name did not match. Please try again.");						
-					//finalColumns.clear();
-				//	} else {
-						
-					//}
-				}
-			//}		
+				}		
 		return finalColumns;
 	}
 	
 	/**
-	 * @return		number of individuals to simulate
+	 * @return		number from user
 	 */
 	public long getNum() {
 		boolean wait = true;
@@ -176,12 +158,13 @@ public class Menu {
 		System.out.println("For generation from probability distributions, press 1");
 		System.out.println("For generation from probability distributions with previous value"
 				+ " dependencies, press 2");
-		System.out.println("For static generation with previous value dependency, press 3");
+		System.out.println("For static generation with previous value dependencies, press 3");
 		System.out.println("For random generation, press 4");
 		System.out.println("For generation from probability distributions, with "
 				+ "file choice dependencies on previous values, press 5");
 		System.out.println("For date generation with range dependency, press 6");
 		System.out.println("For multi-value data generation, press 7");
+		System.out.println("For multi-value data generation based off multi-values, press 8");
 		boolean wait = true;
 		int input = 0;
 		while (wait) {
@@ -202,10 +185,12 @@ public class Menu {
 					source = Source.DEP_DATE;
 				} else if (input == 7) {
 					source = Source.MULTI_VALUE;
+				} else if (input == 8) {
+					source = Source.MULTI_VALUE_2;
 				} else {
 					wait = true;
 					System.out.println("invalid option chosen. Please enter"
-						+ " 1, 2, 3, 4, 5 or 6."); 
+						+ " 1, 2, 3, 4, 5, 6, 7, or 8."); 
 				}
 			}
 		}
@@ -418,19 +403,6 @@ public class Menu {
 		return null;
 	}
 	
-	public String getKey(String table) {
-		System.out.println("Please input the foreign key for table " + table + ".");
-		boolean wait = true;
-		String input = null;
-		while (wait) {
-			input = userInput.next();
-			if (input != null) {
-				return input;
-			}
-		}
-		return null;
-	}
-	
 	/**
 	 * @param table		the table name
 	 * @return			the columns for the table
@@ -452,6 +424,24 @@ public class Menu {
 			}
 		}
 		return cols;
+	}
+	
+	public double getProbability() {
+		System.out.println("Please input the desired probability for individual "
+				+ "presence in all tables");
+		boolean wait = true;
+		String input = null;
+		double num = 0.0;
+		while (wait) {
+			input = userInput.next();
+			try {
+				num = Double.parseDouble(input);
+				return num;
+			} catch (NumberFormatException e) {
+				System.out.println("Invalid input. Please try again.");
+			}	
+		}
+		return num;
 	}
 
 }
