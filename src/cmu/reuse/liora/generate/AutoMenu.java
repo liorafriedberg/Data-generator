@@ -49,7 +49,7 @@ public class AutoMenu extends Menu {
 	 */
 	@Override
 	public Column getProbColumn(List<Column> columns, Column c) {
-		String prob = prop.getProperty(c.datatype + "PropColumn");
+		String prob = prop.getProperty(c.datatype + "ProbColumn");
 		Column probColumn = null;
 		for (Column column : columns) {
 			if (column.datatype.equals(prob)) {
@@ -69,6 +69,7 @@ public class AutoMenu extends Menu {
 	@Override
 	public Column getValueColumn(List<Column> columns, Column c) {
 		String val = prop.getProperty(c.datatype + "ValueColumn");
+	System.out.println("key: " + c.datatype + "ValueColumn to " + val);
 		Column valColumn = null;
 		for (Column column : columns) {
 			if (column.datatype.equals(val)) {
@@ -242,7 +243,7 @@ public class AutoMenu extends Menu {
 		String format = prop.getProperty(c.datatype + "Format");
 		try {
 			int num = Integer.parseInt(format);
-			if (num != 1 || num != 2) {
+			if (num != 1 && num != 2) {
 				throw new IllegalArgumentException("Incorrect data format input");
 			}
 			return num;
