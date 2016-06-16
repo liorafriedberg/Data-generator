@@ -53,6 +53,8 @@ public class RandomSim implements Simulator {
 			File file = menu.getFile();
 			CSVReader readerCount = new CSVReader(file);
 			int count = readerCount.countLines();
+			System.out.println("Please enter the name of the column with the possible values.");	
+			Column valColumn = menu.getColumn(readerCount.header);
 			readerCount.close();	
 			System.out.println("Please enter the upper bound of the number "
 					+ "of values, starting"
@@ -63,7 +65,7 @@ public class RandomSim implements Simulator {
 				String concat = "";
 				for (int i = 0; i < times; i++) {
 					CSVReader reader = new CSVReader(file);
-					concat = concat + reader.staticRead(column, count) + " "; //add next random value
+					concat = concat + reader.staticRead(valColumn, count) + " "; //add next random value
 					reader.close();
 				}
 				person.setValue(column, concat);						
