@@ -10,11 +10,11 @@ public class DepStaticSim implements Simulator {
 	
 	@Override
 	public void simulate(Menu menu, Column column, List<Individual> people, List<Column> cols) {
-		File file = menu.getFile();
+		File file = menu.getFile(column);
 		CSVReader reader = new CSVReader(file);		
 		List<Column> dependencies = menu.getDependencies(column, reader.header);
 		System.out.println("Please enter the name of the column with the possible values.");	
-		Column valColumn = menu.getColumn(reader.header);
+		Column valColumn = menu.getValueColumn(reader.header, column);
 		int columnIndex = reader.getColumnIndex(valColumn); //index of column value want
 		Map<Integer, Column> indexToDep = new HashMap<>();
 		Set<Column> check = people.get(0).getValues().keySet();
