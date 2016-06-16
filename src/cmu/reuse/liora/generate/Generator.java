@@ -14,7 +14,6 @@ import java.util.Map;
  */
 
 public class Generator {
-	//**note to reader: override menu calls in automenu, change back to menu for user interaction**	
 	
 	/**
 	 * starts generation
@@ -64,7 +63,7 @@ public class Generator {
 			Individual person = new Individual();
 			Column c = new Column("id");
 			c.source = Source.SEQUENTIAL_LINE; //fine
-			person.setValue(c, i + 1 + "");
+			person.setValue(c, i + 1 + "");			
 			people.add(person);
 		}
 		
@@ -104,6 +103,10 @@ public class Generator {
 				column.source = Source.MULTI_VALUE; //can just keep for this one
 				sim = new MultiValueSim();
 				sim.simulate(menu, column, people, allColumns);
+			} else if (source.equals(Source.MULTI_VALUE_2)) {
+				column.source = Source.MULTI_VALUE_2;
+				sim = new MultiValueTwoSim();
+				sim.simulate(menu, column, people, allColumns);
 			}
 		
 		}
@@ -111,7 +114,6 @@ public class Generator {
 		return people;
 	}
 	
-	//comment out for part working right now
 	/**
 	 * writes new tables related to current tables in db
 	 * @param rows		rows generated
@@ -130,9 +132,9 @@ public class Generator {
 					String[] addTables = menu.getTables();
 					for (int j = 0; j < addTables.length; j++) {	
 						String newTable = addTables[j];
+						//assume they'll say insurance and not id
 						List<Column> newTableCols = menu.getTableCols(newTable); //disease, prescription
 						Column mv = menu.getColumn(newTableCols); //or could go through and find without ui
-						String key = menu.getKey(newTable); //need?
 						String mvType = "";
 						String addCreate = "CREATE TABLE " + newTable + "( ";
 						
@@ -161,7 +163,6 @@ public class Generator {
 				stmt = c.prepareStatement(addCreate);
 				stmt.executeUpdate();			
 				System.out.println("Please input the multivalue column to assign");
-				//assume is only one mv ?? ****	if not then do with some kind of list
 				
 				for (Individual person : rows) {
 					Map<Column, String> vals = person.getValues();					
@@ -181,51 +182,10 @@ public class Generator {
 					}
 					 					
 				}
-				System.out.println("Please input the value to join on"); // multiple to join on? **
-				Column joinC = menu.getColumn(newTableCols);
-			
-			//is above order okay?? then just go through and assign prescription if need,
-			//and can "join" (id from insurance_member_id?) ****
-					
-			//OR DIFF FROM ABOVE: -------------
-			//insert into medicalrecords insurance_member_id (joiners) how many? 
-					//select insurance_member_id etc
-					//from insurance
-					//where; 				
-					//(or
-					//SELECT insurance_member_id
-				//	INTO medicalrecords
-				//	FROM insurance;)
 				
-					//if do this order: how handle insert multiple times for later mult ds? 
-					
-					//then can join - so get id? 
-					
-					// select insurance.id
-					// into medicalrecords
-					//	from insurance
-					// left join medicalrecords
-					// on insurance.insurance_member_id=medicalrecords.insurance_member_id
-			
-			//get person id and insert disease - but how duplicate rows? one by one? 
-			
-			//update medicalrecords
-			//set disease=first
-			//where record ? 		-- how assign? 
-			
-			//set disease 2
-			//where record ?
-					
-			//------------
-					//are the cols only joiners and multivalue? **
-				    //what table look like? ****
-					
-					//insurance_member_id   disease		prescription
-					//a						cancer		
-					//a						diabetes
-					
-					//how assign prescription? static from disease so already assigned? ****				
-										
+				//inserting into final table
+				// cols are not only a join and mv
+				//multiple mvs			
 				}
 			}
 		}
@@ -238,6 +198,25 @@ public class Generator {
 	         System.exit(0);
 		}			
 	}	
+	
+	public static String writeIndividual(Individual i, String table, List<Column> cols) {
+		String insert = "INSERT INTO " + table + " VALUES( ";
+		Map<Column, String> iVals = i.getValues();
+		for (Column col : cols) {
+			Source sc = col.source;
+			if (!sc.equals(Source.MULTI_VALUE) && !sc.equals(Source.MULTI_VALUE_2)) {
+			String s = iVals.get(col);
+			try {
+				Integer.parseInt(s);
+				insert = insert + " " + s + ",";
+			} catch(NumberFormatException e) {
+				insert = insert + " '" + s + "', ";
+			}
+			}
+		}
+		insert = insert.substring(0, insert.length() - 2) + ");";
+		return insert;
+	}
 	
 	/**
 	 * writes new tables to break up total data in db
@@ -252,7 +231,7 @@ public class Generator {
 			for (int i = 0; i < tables.length; i++) {
 				String table = tables[i];
 				String subCreate = "CREATE TABLE " + table + "( ";
-				List<Column> cols = menu.getTableCols(table);
+				List<Column> cols = menu.getTableCols(table); //assume they'll say id
 				Map<Column, String> sampleVals = rows.get(0).getValues();
 				for (Column col : cols) {
 					try {
@@ -266,19 +245,18 @@ public class Generator {
 					//don't need primary or foreign keys in these tables
 
 				stmt = c.prepareStatement(subCreate);
-				stmt.executeUpdate();
-					
-				String subInsert = "INSERT INTO " + table + 
-										" SELECT"; 
-				for (Column col : cols) {
-					subInsert = subInsert + " " + col.datatype + ",";
-				}
-				subInsert = subInsert.substring(0, subInsert.length() - 1); 
-				subInsert = subInsert + " FROM TOTAL;";
-					
-				stmt = c.prepareStatement(subInsert);
-				stmt.executeUpdate();				
-			}
+				stmt.executeUpdate();	
+			
+				double prob = menu.getProbability();
+				for (Individual person : rows) {
+					double random = Math.random();
+						if (random <= prob) { //put in both
+							String insert = writeIndividual(person, tables[i], cols);
+							stmt = c.prepareStatement(insert);
+							stmt.executeUpdate();
+						} 
+				}		
+			}			
 			stmt.close();
 			addDbCols(rows, c, tables);
 		}	catch(Exception e) {
@@ -304,7 +282,8 @@ public class Generator {
 			String create = "CREATE TABLE TOTAL("; //but don't want to recreate now so comment out or drop in cl
 			Map<Column, String> values = rows.get(0).getValues();
 			for (Column col : values.keySet()) {
-				if (!col.source.equals(Source.MULTI_VALUE)) {
+				Source s = col.source;
+				if (!s.equals(Source.MULTI_VALUE) && !s.equals(Source.MULTI_VALUE_2)) {
 					try {
 						Integer.parseInt(values.get(col));
 						create = create + col.datatype + " BIGINT " + "NOT NULL, ";
@@ -323,7 +302,8 @@ public class Generator {
 				
 				Map<Column, String> iValues = i.getValues();
 				for (Column col : iValues.keySet()) {
-					if (!col.source.equals(Source.MULTI_VALUE)) {
+					Source sc = col.source;
+					if (!sc.equals(Source.MULTI_VALUE) && !sc.equals(Source.MULTI_VALUE_2)) {
 						String s = iValues.get(col);
 						try {
 							Integer.parseInt(s);
