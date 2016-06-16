@@ -1,6 +1,7 @@
 package cmu.reuse.liora.generate;
 
 import java.io.File;
+import java.io.IOException;
 import java.sql.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -18,8 +19,9 @@ public class Generator {
 	/**
 	 * starts generation
 	 * @param args
+	 * @throws IOException 
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		long first = System.currentTimeMillis();
 		List<Individual> rows = generate();
 		long second = System.currentTimeMillis();
@@ -34,16 +36,17 @@ public class Generator {
 		long finalTime = second - first;
 		System.out.println("final time in millis: " + finalTime);
 		
-		write(rows);
+		//write(rows); ADD BACK IN LATER
 		
 	}
 	
 
 	/**
 	 * @return		the generated individual data
+	 * @throws IOException 
 	 */
-	public static List<Individual> generate() {
-		Menu menu = new Menu(); //AutoMenu to automate
+	public static List<Individual> generate() throws IOException {		
+		Menu menu = new AutoMenu(); //AutoMenu to automate
 		List<File> files = menu.getAllFiles(); //get all relevant files from user		
 		
 		List<Column> columns = new ArrayList<>();
