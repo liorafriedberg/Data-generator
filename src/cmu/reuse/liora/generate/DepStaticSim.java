@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class DepStaticSim implements Simulator {
 	
@@ -16,9 +17,13 @@ public class DepStaticSim implements Simulator {
 		Column valColumn = menu.getColumn(reader.header);
 		int columnIndex = reader.getColumnIndex(valColumn); //index of column value want
 		Map<Integer, Column> indexToDep = new HashMap<>();
+		Set<Column> check = people.get(0).getValues().keySet();
 		for (Column d : dependencies) {
 		int depIndex = reader.getColumnIndex(d);	
 		indexToDep.put(depIndex, d);
+		if (!check.contains(d)) {
+			throw new IllegalArgumentException("Chose a dependency not yet assigned");
+		}	
 	}
 		Map<Map<Column, String>, String> values = reader.findStaticValue(indexToDep, columnIndex); 
 
@@ -26,7 +31,7 @@ public class DepStaticSim implements Simulator {
 		for (Individual person : people) {	
 		Map<Column, String> currentValues = person.getValues();
 		Map<Column, String> currentDepVals = new HashMap<>();
-		for (Column d : dependencies) {
+		for (Column d : dependencies) {		
 			currentDepVals.put(d, currentValues.get(d));
 		}		
 		String value = values.get(currentDepVals);
