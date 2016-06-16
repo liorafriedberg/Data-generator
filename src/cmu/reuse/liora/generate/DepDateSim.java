@@ -12,14 +12,14 @@ public class DepDateSim implements Simulator {
 	@Override
 	public void simulate(Menu menu, Column column, List<Individual> people, List<Column> cols) {
 
-		File file = menu.getFile();
+		File file = menu.getFile(column);
 		CSVReader reader = new CSVReader(file);
 		System.out.println("Please enter the name of the column with the probabilities for the "
 				+ "dependency");
-		Column probColumn = menu.getColumn(reader.header);
+		Column probColumn = menu.getProbColumn(reader.header, column);
 		System.out.println("Please enter the name of the column with the values for the dependency");
-		Column valColumn = menu.getColumn(reader.header);
-		int format = menu.getDataFormat();
+		Column valColumn = menu.getValueColumn(reader.header, column);
+		int format = menu.getDataFormat(column);
 		if (format == 1) {
 			reader.parseProbs(valColumn, probColumn);
 		}
