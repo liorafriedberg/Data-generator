@@ -70,6 +70,11 @@ public class Menu {
 		return getColumn(columns);
 	}
 	
+	public Column getMvColumn(List<Column> columns) {
+		System.out.println("Please enter multivalue column");
+		return getColumn(columns);
+	}
+	
 	
 	/**
 	 * @param columns		all columns from files
@@ -458,7 +463,11 @@ public class Menu {
 		return cols;
 	}
 	
-	public double getProbability() {
+	public String[] getMvTables(String table) {
+		return getTables();
+	}
+	
+	public double getProbability(String table) {
 		System.out.println("Please input the desired probability for individual "
 				+ "presence in all tables");
 		boolean wait = true;
