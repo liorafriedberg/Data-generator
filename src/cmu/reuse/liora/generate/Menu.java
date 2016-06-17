@@ -57,28 +57,41 @@ public class Menu {
 		return files;
 	}
 	
+	/**
+	 * defaults to getColumn, included for automated extension
+	 * @param columns	all columns
+	 * @param c			current column
+	 * @return			the column with probabilities
+	 */
 	public Column getProbColumn(List<Column> columns, Column c) {
 		return getColumn(columns);
 	}
 	
+	/**	 
+	 * defaults to getColumn, included for automated extension
+	 * @param columns	all columns
+	 * @param c			current column
+	 * @return			the column with values
+	 */
 	public Column getValueColumn(List<Column> columns, Column c) {
 		return getColumn(columns);
 	}
 	
+	/**
+	 * defaults to getColumn, included for automated extension
+	 * @param columns	all columns
+	 * @param c			current column
+	 * @return			the column with the dependency
+	 */
 	public Column getDepColumn(List<Column> columns, Column c) {
 		System.out.println("Please enter dependency column");
-		return getColumn(columns);
-	}
-	
-	public Column getMvColumn(List<Column> columns) {
-		System.out.println("Please enter multivalue column");
 		return getColumn(columns);
 	}
 	
 	
 	/**
 	 * @param columns		all columns from files
-	 * @return				column with the probability distribution
+	 * @return				relevant column
 	 */
 	public Column getColumn(List<Column> columns) {
 		String input = null;
@@ -105,7 +118,7 @@ public class Menu {
 	
 	/**
 	 * @param currentColumns		all columns from files
-	 * @return						columns of the datatypes to generate, in order
+	 * @return						columns of the datatypes to generate, **in order**
 	 */
 	public List<Column> getFinalColumns(List<Column> currentColumns) {
 		List<Column> finalColumns = new ArrayList<>();
@@ -131,10 +144,20 @@ public class Menu {
 		return finalColumns;
 	}
 	
+	/**
+	 * defaults to getNum, included for automated extension
+	 * @param c		current column
+	 * @return		offset for offset_num generation
+	 */
 	public long getOffset(Column c) {
 		return getNum();
 	}
 	
+	/**
+	 * defaults to getNum, included for automated extension
+	 * @param c		current column
+	 * @return		bound for rand_value_from_list generation
+	 */
 	public int getBound(Column c) {
 		return (int) getNum();
 	}
@@ -159,7 +182,8 @@ public class Menu {
 	
 	/**
 	 * @param table		Table name
-	 * @return
+	 * @return			whether or not user wants to extend table to new table for multi-value column
+	 * 					support, eg insurance into medicalrecords
 	 */
 	public boolean getChoice(String table) {
 		System.out.println("For table " + table + ", would you like to extend? Please"
@@ -180,7 +204,7 @@ public class Menu {
 	
 	
 	/**
-	 * @param column		
+	 * @param column	current column, parameter for automated extension
 	 * @return			source for input column
 	 */
 	public Source getSource(Column column) { 
@@ -228,7 +252,9 @@ public class Menu {
 		return source;
 	}
 	
+
 	/**
+	 * @param c		Current column, parameter for automated extension
 	 * @return		source within the randomized source options
 	 */
 	public Source getRandom(Column c) {
@@ -261,7 +287,9 @@ public class Menu {
 		return source;
 	}
 	
+
 	/**
+	 * @param c		Current column, parameter for automated extension
 	 * @return		file from user
 	 */
 	public File getFile(Column c) {
@@ -283,7 +311,9 @@ public class Menu {
 		return file;
 	}
 	
+
 	/**
+	 * @param c		Current column, parameter for automated extension
 	 * @return		percentage or frequency data format
 	 */
 	public int getDataFormat(Column c) {
@@ -300,7 +330,9 @@ public class Menu {
 		return input;
 	}
 	
+
 	/**
+	 * @param c		Current column, parameter for automated extension	
 	 * @return		a map from value to file for dependent datatype generation
 	 */
 	public Map<String, File> getFileDeps(Column c) {
@@ -338,7 +370,7 @@ public class Menu {
 	}
 	
 	/**
-	 * @param column		
+	 * @param column		Current column
 	 * @param columns		all columns
 	 * @return				the columns on which the input column's value depends
 	 */
@@ -349,7 +381,7 @@ public class Menu {
 	}
 	
 	/**
-	 * @param column
+	 * @param column		Current column
 	 * @param columns		all columns
 	 * @return				the columns with the potential values for a datatype and their distributions
 	 */
@@ -360,8 +392,8 @@ public class Menu {
 	}
 	
 	/**
-	 * @param column		
-	 * @param columns
+	 * @param column		Current column, parameter for automated extension
+	 * @param columns		all columns
 	 * @return		list of columns from user input
 	 */
 	public List<Column> getColumnRange(Column column, List<Column> columns) {		
@@ -435,8 +467,8 @@ public class Menu {
 	}
 	
 	/**
-	 * @param table		the table name
-	 * @param allColumns 
+	 * @param table			table name
+	 * @param allColumns 	all columns
 	 * @return			the columns for the table
 	 */
 	public List<Column> getTableCols(String table, List<Column> allColumns) {
@@ -463,10 +495,19 @@ public class Menu {
 		return cols;
 	}
 	
+	/**
+	 * included for automated extension
+	 * @param table		table name
+	 * @return			array of new table names
+	 */
 	public String[] getMvTables(String table) {
 		return getTables();
 	}
 	
+	/**
+	 * @param table		table name
+	 * @return			probability any given individual is present in the table
+	 */
 	public double getProbability(String table) {
 		System.out.println("Please input the desired probability for individual "
 				+ "presence in all tables");
