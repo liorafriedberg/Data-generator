@@ -13,8 +13,11 @@ public class Individual {
 	
 	private Map<Column, String> values;
 	
+	Map<String, String> mvTwo; //e.g. cancer-chemo,rad     ,  pain-tylenol,ibf
+	
 	Individual() {
 		values = new HashMap<>();
+		mvTwo = new HashMap<>();
 	}
 	
 	/**
