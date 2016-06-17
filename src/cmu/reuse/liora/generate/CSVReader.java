@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -56,6 +57,31 @@ public class CSVReader {
 	 */
 	public void close() {
 		sc.close();
+	}
+	
+	public Map<Map<Column, String>, Set<Map<Column, String>>> findDepTwoValues(Map<Integer, Column> indexToDep, Map<Integer, Column> indexToP) {
+		Map<Map<Column, String>, Set<Map<Column, String>>> saveRows = new HashMap<>();
+		while (sc.hasNextLine()) {
+			String line = sc.nextLine();
+			String[] parts = line.split(",");
+			Map<Column, String> deps = new HashMap<>();
+			for (int i : indexToDep.keySet()) {
+				deps.put(indexToDep.get(i), parts[i]);
+			}
+			Map<Column, String> vals = new HashMap<>();
+			for (int i : indexToP.keySet()) {
+				vals.put(indexToP.get(i), parts[i]);
+			}
+			Set<Map<Column, String>> set;
+			if (saveRows.containsKey(deps)) {
+				set = saveRows.get(deps);
+			} else {
+				set = new HashSet<>();
+			}
+			set.add(vals);
+			saveRows.put(deps, set);
+		}
+		return saveRows;
 	}
 	
 	
