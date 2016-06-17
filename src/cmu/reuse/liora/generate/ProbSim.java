@@ -3,8 +3,15 @@ package cmu.reuse.liora.generate;
 import java.io.File;
 import java.util.List;
 
+/**
+ * generates individual-level data from a probability distribution
+ * @author liorafriedberg
+ */
 public class ProbSim implements Simulator {
 
+	/* (non-Javadoc)
+	 * @see cmu.reuse.liora.generate.Simulator#simulate(cmu.reuse.liora.generate.Menu, cmu.reuse.liora.generate.Column, java.util.List, java.util.List)
+	 */
 	@Override
 	public void simulate(Menu menu, Column column, List<Individual> people, List<Column> cols) {
 		File file = menu.getFile(column);
