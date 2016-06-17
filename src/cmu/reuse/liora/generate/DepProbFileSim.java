@@ -7,7 +7,8 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * generates individual-level data from probability distributions that are dependent on previous values
+ * generates individual-level data from a file (with a probability distribution) that is dependent on 
+ * previous values
  * @author liorafriedberg
  */
 public class DepProbFileSim implements Simulator {
