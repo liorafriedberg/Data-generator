@@ -347,24 +347,46 @@ public class AutoMenu extends Menu {
 	 * @see cmu.reuse.liora.generate.Menu#getTables()
 	 */
 	@Override
-	public String[] getTables() { //notnow
-		return null;
+	public String[] getTables() {
+		String tables = prop.getProperty("tables");
+		return tables.split(",");
 	}
 	
 	/* (non-Javadoc)
 	 * @see cmu.reuse.liora.generate.Menu#getTableCols(java.lang.String)
 	 */
 	@Override
-	public List<Column> getTableCols(String table) { //notnow
-		return null;
+	public List<Column> getTableCols(String table, List<Column> allColumns) { 
+		String colsStr = prop.getProperty(table + "Cols");
+		List<Column> cols = new ArrayList<>();
+		String[] parts = colsStr.split(",");
+		for (int i = 0; i < parts.length; i++) {
+			String part = parts[i];
+			for (Column c : allColumns) {
+				if (c.datatype.equals(part)) {
+					cols.add(c);
+					break;
+				}
+			}
+		}
+		return cols;
 	}
 	
 	/* (non-Javadoc)
 	 * @see cmu.reuse.liora.generate.Menu#getProbability()
 	 */
 	@Override
-	public double getProbability() { //notnow
-		return 0.0;
+	public double getProbability() {
+		String prob = prop.getProperty("presenceProb");
+		try {
+			double num = Double.parseDouble(prob);
+			if (num < 0 || num > 1) {
+				throw new IllegalArgumentException("Incorrect probability input");
+			}
+			return num;
+		} catch(NumberFormatException e) {
+			throw new IllegalArgumentException("Incorrect probability input");
+		}
 	}
 	
 	/* (non-Javadoc)
