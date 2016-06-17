@@ -1,3 +1,11 @@
+General information:
+System has a number of csv files containing probabilities of an individual having different types
+of attributes, compiled from real-world aggregate census data. User can make a configuration file to
+their specifications. Generates synthetic individual-level data for any given number of individuals
+from the aggregate data, using different approaches depending on the file - probability 
+distributions, random lines, dependent values, etc. This data is written to the database, with an
+individual represented in a row, and the attributes corresponding to the database fields.
+
 Data generation process for each column:
 
 insurance_member_id: UUID
@@ -44,4 +52,4 @@ state: statically assigned depending on zip value using zip.csv
 disease: multivalue, from file I made disease.csv. Probability of each disease based on 
 dependencies and assign to individual per their previous values and a die roll.
 
-prescription: assigned based off disease
+prescription: assigned based off a probability depending on disease and (currently) gender
