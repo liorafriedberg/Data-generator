@@ -43,9 +43,11 @@ public class DepDateSim implements Simulator {
 			String dob = sdf.format(date);
 			person.setValue(column, dob);
 			Column ageRange = new Column("range");
+			ageRange.source = Source.DEP_DATE; //fine
 			Column age = new Column("age");
+			age.source = Source.DEP_DATE; //fine
 			person.setValue(ageRange, range); 
-			person.setValue(age, "" + randomAge);
+			person.setValue(age, "" + (year - randomAge));
 		}
 		reader.close();								
 	
