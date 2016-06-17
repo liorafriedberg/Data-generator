@@ -59,6 +59,11 @@ public class CSVReader {
 		sc.close();
 	}
 	
+	/**
+	 * @param indexToDep		column index to column for all dependencies
+	 * @param indexToP			column index to column for all values
+	 * @return					a map of dependencies to all rows of corresponding values
+	 */
 	public Map<Map<Column, String>, Set<Map<Column, String>>> findDepTwoValues(Map<Integer, Column> indexToDep, Map<Integer, Column> indexToP) {
 		Map<Map<Column, String>, Set<Map<Column, String>>> saveRows = new HashMap<>();
 		while (sc.hasNextLine()) {
@@ -83,8 +88,14 @@ public class CSVReader {
 		}
 		return saveRows;
 	}
+
+	//note: may be able to just use above
 	
-	
+	/**
+	 * @param indexToDep	column index to column for all dependencies
+	 * @param indexToP		column index to column for all values
+	 * @return				a man of dependencies to the corresponding values
+	 */
 	public Map<Map<Column, String>, Map<Column, String>> findDepValues(Map<Integer, Column> indexToDep, Map<Integer, Column> indexToP) {
 		Map<Map<Column, String>, Map<Column, String>> saveRows = new HashMap<>();
 		while (sc.hasNextLine()) {
@@ -103,10 +114,9 @@ public class CSVReader {
 		return saveRows;
 	}
 	
-	/**
-	 * parse frequencies into percentages from file based on row
-	 * @param indexToValue		indices to values to match on
-	 * @param indexToPotential	indices to columns for the distribution
+
+	/**parse frequencies into percentages from file based on row
+	 * @param pVals		column to potential value
 	 */
 	public void parseFreqsDep(Map<Column, String> pVals) {
 		probabilities.clear();
@@ -129,10 +139,9 @@ public class CSVReader {
 		
 	}
 	
-	/**
-	 * parse probabilities from file based on row
-	 * @param indexToValue		indices to values to match on
-	 * @param indexToPotential		indices to columns for the distribution
+
+	/**parse probabilities from file based on row
+	 * @param pVals column to potential value
 	 */
 	public void parseProbsDep(Map<Column, String> pVals) {
 		probabilities.clear(); 
@@ -150,7 +159,7 @@ public class CSVReader {
 	}
 	
 	/**
-	 * @param indices 			indices to values to match on 
+	 * @param indexToDep 		index of column to column for dependencies
 	 * @param valIndex		index of the column with the value to return
 	 * @return				map from column indices to their values to the possible value for each line
 	 */
