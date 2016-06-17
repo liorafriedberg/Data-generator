@@ -39,11 +39,9 @@ public class Generator {
 		//now have rows to put in database!
 		long finalTime = second - first;
 		System.out.println("final time in millis: " + finalTime);
-		
-	//write(rows, allColumns);
+	write(rows, allColumns);
 		
 	}
-	
 
 	/**
 	 * @return		the generated individual data
@@ -57,10 +55,10 @@ public class Generator {
 		for (File file : files) {
 			CSVReader reader = new CSVReader(file);
 			columns.addAll(reader.header);
+			allColumns.addAll(reader.header);
 			reader.close();
 		}
 		//columns now has all the possible columns
-		allColumns = columns; //allColumns has all possible columns
 		columns = menu.getFinalColumns(columns); //columns has ones the user actually wants, in order
 		
 		List<Individual> people = new ArrayList<>();
@@ -128,26 +126,36 @@ public class Generator {
 	 * @param tables	all new tables in db
 	 * @throws IOException 
 	 */
-	public static void addDbCols(List<Individual> rows, Connection c, String[] tables) throws IOException {
+	public static void addDbCols(List<Individual> rows, Connection c, String[] tables, List<Column> allColumns) throws IOException {
 		Menu menu = new AutoMenu();
 		PreparedStatement stmt = null;
 		try {
-		/*	for (int i = 0; i < tables.length; i++) {
+			for (int i = 0; i < tables.length; i++) {
 				String table = tables[i];
 				boolean choice = menu.getChoice(table); //insurance
 				if (choice) {
 					//medical records
-					String[] addTables = menu.getTables();
+					String[] addTables = menu.getMvTables(table);
 					for (int j = 0; j < addTables.length; j++) {	
 						String newTable = addTables[j];
-						//assume they'll say insurance and not id
-						List<Column> newTableCols = menu.getTableCols(newTable); //disease, prescription
-						Column mv = menu.getColumn(newTableCols); //or could go through and find without ui
+
+						List<Column> newTableCols = menu.getTableCols(newTable, allColumns); //disease, prescription
+						Column mv = null;	
+						Column mv2 = null;
+						for (Column col : newTableCols) {
+							Source s = menu.getSource(col);
+							if (s.equals(Source.MULTI_VALUE)) {
+								mv = col;
+							} else if (s.equals(Source.MULTI_VALUE_2)) {
+								mv2 = col;
+							}
+						}
 						String mvType = "";
+						String mv2Type = "";
 						String addCreate = "CREATE TABLE " + newTable + "( ";
 						
 						for (Column col : newTableCols) {
-							
+							Source s = menu.getSource(col);
 							String val = rows.get(0).getValues().get(col);
 							String type = "";
 							try {
@@ -156,50 +164,131 @@ public class Generator {
 							} catch(NumberFormatException e) {
 								type = "VARCHAR";
 							}
-							if (!col.source.equals(Source.MULTI_VALUE)) {
+							if (!s.equals(Source.MULTI_VALUE) && !s.equals(Source.MULTI_VALUE_2)) {
 								addCreate = addCreate + col.datatype + " " + type + " NOT NULL, ";
 							}
-							else {
+							else if (s.equals(Source.MULTI_VALUE)) {
 								mvType = type;
+							} else {
+								mv2Type = type;
 							}
 						}						
 						
-						addCreate = addCreate + mv.datatype + " " + mvType + ");"; //so matches
+						addCreate = addCreate + mv.datatype + " " + mvType + 
+								", " + mv2.datatype + " " + mv2Type + ");"; //so matches
 						//order below
 
 				System.out.println("addCreate: " + addCreate);
 				stmt = c.prepareStatement(addCreate);
 				stmt.executeUpdate();			
-				System.out.println("Please input the multivalue column to assign");
-				
+				String all = "";
+				String some = "";
+				String none = "";
+				for (Column colTwo : newTableCols) {
+					System.out.println("in loop: col: " + colTwo.datatype);
+					Source s = menu.getSource(colTwo);
+					if (!s.equals(Source.MULTI_VALUE) && !s.equals(Source.MULTI_VALUE_2)) {
+						none = none + colTwo.datatype + ",";
+					}
+				}
+				none = none.substring(0, none.length() - 1);
+				some = none + "," + mv.datatype;
+				all = some + "," + mv2.datatype;
+
 				for (Individual person : rows) {
-					Map<Column, String> vals = person.getValues();					
-					String[] parts = vals.get(mv).split(",");
-					for (int k = 0; k < parts.length; k++) { //clean everything up
-						String addInsert = "INSERT INTO " + newTable + " VALUES (";	
+					Map<String, String> mvMap = person.mvTwo;
+					Map<Column, String> vals = person.getValues();			
+					if (mvMap.size() > 0) {
+					for (String mvS : mvMap.keySet()) {
+						String mv2S = mvMap.get(mvS);
+						if (mv2S.length() > 0) {
+						String[] parts = mv2S.split(",");
+						for (int l = 0; l < parts.length; l++) {
+							String addInsert = "INSERT INTO " + newTable + " (" + all + ") " + " VALUES (";	 
 							for (Column colTwo : newTableCols) {
-								if (!colTwo.source.equals(Source.MULTI_VALUE)) {
-									addInsert = addInsert + vals.get(colTwo) + ", ";
+								Source s = menu.getSource(colTwo);
+								if (!s.equals(Source.MULTI_VALUE) && !s.equals(Source.MULTI_VALUE_2)) {
+									String check = vals.get(colTwo);
+									try {
+										Integer.parseInt(check);
+										addInsert = addInsert + check + ", ";
+									} catch(NumberFormatException e) {
+									addInsert = addInsert + "'" + check + "', ";
+									}
 								}
 							}
-							addInsert = addInsert + parts[k] + ");";
-				
+							try {
+								Integer.parseInt(mvS);
+								addInsert = addInsert + mvS + ", ";
+							} catch(NumberFormatException e) {
+								addInsert = addInsert + "'" + mvS + "', ";
+							}
+							try {
+								Integer.parseInt(parts[l]);
+								addInsert = addInsert + parts[l] + ");";
+							} catch(NumberFormatException e) {
+								addInsert = addInsert + "'" + parts[l] + "');";
+							}
 							System.out.println("addInsert: " + addInsert);
 							stmt = c.prepareStatement(addInsert);
 							stmt.executeUpdate();	
+						}
+						} else {
+							String addInsert = "INSERT INTO " + newTable + " (" + some + ") " + " VALUES (";
+							for (Column colTwo : newTableCols) {
+								Source s = menu.getSource(colTwo);
+								if (!s.equals(Source.MULTI_VALUE) && !s.equals(Source.MULTI_VALUE_2)) {
+									String check = vals.get(colTwo);
+									try {
+										Integer.parseInt(check);
+										addInsert = addInsert + check + ", ";
+									} catch(NumberFormatException e) {
+										addInsert = addInsert + "'" + check + "', ";
+										}
+								}
+							}
+							System.out.println("what is disease: " + mvS);
+							try {
+								Integer.parseInt(mvS);
+								addInsert = addInsert + mvS + ");";
+							} catch(NumberFormatException e) {
+								addInsert = addInsert + "'" + mvS + "');";
+							}						
+							System.out.println("addInsert: " + addInsert);
+							stmt = c.prepareStatement(addInsert);
+							stmt.executeUpdate();
+						}
+					}
+					}
+					else {
+						String addInsert = "INSERT INTO " + newTable + " (" + none + ") " + " VALUES (";
+						for (Column colTwo : newTableCols) {
+							Source s = menu.getSource(colTwo);
+							if (!s.equals(Source.MULTI_VALUE) && !s.equals(Source.MULTI_VALUE_2)) {
+								String check = vals.get(colTwo);
+								try {
+									Integer.parseInt(check);
+									addInsert = addInsert + check + ", ";
+								} catch(NumberFormatException e) {
+									addInsert = addInsert + "'" + check + "', ";
+									}
+							}
+						}
+						addInsert = addInsert.substring(0, addInsert.length() - 2) + ");";
+						System.out.println("addInsert: " + addInsert);
+						stmt = c.prepareStatement(addInsert);
+						stmt.executeUpdate();
+					}
+							
 					}
 					 					
 				}
-				
-				//inserting into final table
-				// cols are not only a join and mv
-				//multiple mvs			
 				}
 			}
-		}
-		stmt.close();*/
-		c.commit();
-		c.close();	
+			stmt.close();
+			c.commit();
+			c.close();
+					
 		} catch(Exception e) {
 			e.printStackTrace();
 	         System.err.println(e.getClass().getName() + ": " + e.getMessage());
@@ -207,12 +296,12 @@ public class Generator {
 		}		
 	}	
 	
-	public static String writeIndividual(Individual i, String table, List<Column> cols) {
+	public static String writeIndividual(Individual i, String table, List<Column> cols) throws IOException {
+		Menu menu = new AutoMenu();
 		String insert = "INSERT INTO " + table + " VALUES( ";
 		Map<Column, String> iVals = i.getValues();
 		for (Column col : cols) {
-			Source sc = col.source;
-			System.out.println("no source for: " + col.datatype);
+			Source sc = menu.getSource(col);
 			if (!sc.equals(Source.MULTI_VALUE) && !sc.equals(Source.MULTI_VALUE_2)) {
 			String s = iVals.get(col);
 			try {
@@ -253,11 +342,11 @@ public class Generator {
 				}
 				subCreate = subCreate.substring(0, subCreate.length() - 2) + ");";
 					//don't need primary or foreign keys in these tables
-
+				System.out.println("sub: " + subCreate);
 				stmt = c.prepareStatement(subCreate);
 				stmt.executeUpdate();	
 			
-				double prob = menu.getProbability();
+				double prob = menu.getProbability(table);
 				for (Individual person : rows) {
 					double random = Math.random();
 						if (random <= prob) { //put in both
@@ -268,7 +357,7 @@ public class Generator {
 				}		
 			}			
 			stmt.close();
-			addDbCols(rows, c, tables);
+			addDbCols(rows, c, tables, allColumns);
 		}	catch(Exception e) {
 				e.printStackTrace();
 				System.err.println(e.getClass().getName() + ": " + e.getMessage());
@@ -288,7 +377,7 @@ public class Generator {
 			Class.forName("org.postgresql.Driver");
 			c = DriverManager.getConnection("jdbc:postgresql://localhost:5432/microsim", "postgres", "microsim2016");
 			c.setAutoCommit(false);
-			
+		
 			String create = "CREATE TABLE TOTAL(";
 			Map<Column, String> values = rows.get(0).getValues();
 			for (Column col : values.keySet()) {
@@ -302,8 +391,7 @@ public class Generator {
 					}
 				}
 			}
-			create = create + " PRIMARY KEY (id));"; 
-			System.out.println("create: " + create); //check
+			create = create + " PRIMARY KEY(id));"; 
 			stmt = c.prepareStatement(create);			
 			stmt.executeUpdate();
 			for (Individual i : rows) {
