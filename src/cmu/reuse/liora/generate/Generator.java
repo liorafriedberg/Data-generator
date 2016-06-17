@@ -15,7 +15,6 @@ import java.util.Map;
  */
 
 public class Generator {
-	
 	/**
 	 * starts generation
 	 * @param args
@@ -23,7 +22,8 @@ public class Generator {
 	 */
 	public static void main(String[] args) throws IOException {
 		long first = System.currentTimeMillis();
-		List<Individual> rows = generate();
+		List<Column> allColumns = new ArrayList<>();
+		List<Individual> rows = generate(allColumns);
 		long second = System.currentTimeMillis();
 		for (Individual i : rows) { //to test
 			Map<Column, String> values = i.getValues();
@@ -31,12 +31,16 @@ public class Generator {
 			for (Column c : values.keySet()) { //can we assume values.keySet same iteration per person every time?
 				System.out.print(c.datatype + ": " + values.get(c) + " ");
 			}
+			Map<String, String> map = i.mvTwo; //del - and change menu back
+			for (String s : map.keySet()) {
+				System.out.println("disease: " + s + " ps: " + map.get(s));
+			}
 		}
 		//now have rows to put in database!
 		long finalTime = second - first;
 		System.out.println("final time in millis: " + finalTime);
 		
-		//write(rows); ADD BACK IN LATER
+	//write(rows, allColumns);
 		
 	}
 	
@@ -45,7 +49,7 @@ public class Generator {
 	 * @return		the generated individual data
 	 * @throws IOException 
 	 */
-	public static List<Individual> generate() throws IOException {		
+	public static List<Individual> generate(List<Column> allColumns) throws IOException {		
 		Menu menu = new AutoMenu(); //AutoMenu to automate
 		List<File> files = menu.getAllFiles(); //get all relevant files from user		
 		
@@ -56,7 +60,7 @@ public class Generator {
 			reader.close();
 		}
 		//columns now has all the possible columns
-		List<Column> allColumns = columns; //allColumns has all possible columns
+		allColumns = columns; //allColumns has all possible columns
 		columns = menu.getFinalColumns(columns); //columns has ones the user actually wants, in order
 		
 		List<Individual> people = new ArrayList<>();
@@ -122,12 +126,13 @@ public class Generator {
 	 * @param rows		rows generated
 	 * @param c			connection to db
 	 * @param tables	all new tables in db
+	 * @throws IOException 
 	 */
-	public static void addDbCols(List<Individual> rows, Connection c, String[] tables) {
-		Menu menu = new Menu();
+	public static void addDbCols(List<Individual> rows, Connection c, String[] tables) throws IOException {
+		Menu menu = new AutoMenu();
 		PreparedStatement stmt = null;
 		try {
-			for (int i = 0; i < tables.length; i++) {
+		/*	for (int i = 0; i < tables.length; i++) {
 				String table = tables[i];
 				boolean choice = menu.getChoice(table); //insurance
 				if (choice) {
@@ -192,14 +197,14 @@ public class Generator {
 				}
 			}
 		}
-		stmt.close();
+		stmt.close();*/
 		c.commit();
 		c.close();	
 		} catch(Exception e) {
 			e.printStackTrace();
 	         System.err.println(e.getClass().getName() + ": " + e.getMessage());
 	         System.exit(0);
-		}			
+		}		
 	}	
 	
 	public static String writeIndividual(Individual i, String table, List<Column> cols) {
@@ -207,6 +212,7 @@ public class Generator {
 		Map<Column, String> iVals = i.getValues();
 		for (Column col : cols) {
 			Source sc = col.source;
+			System.out.println("no source for: " + col.datatype);
 			if (!sc.equals(Source.MULTI_VALUE) && !sc.equals(Source.MULTI_VALUE_2)) {
 			String s = iVals.get(col);
 			try {
@@ -225,16 +231,17 @@ public class Generator {
 	 * writes new tables to break up total data in db
 	 * @param rows		the data generated
 	 * @param c			Connection to db
+	 * @throws IOException 
 	 */
-	public static void subTables(List<Individual> rows, Connection c) {
-		Menu menu = new Menu();
+	public static void subTables(List<Individual> rows, Connection c, List<Column> allColumns) throws IOException {
+		Menu menu = new AutoMenu();
 		PreparedStatement stmt = null;
 		try {
 			String[] tables = menu.getTables();
 			for (int i = 0; i < tables.length; i++) {
 				String table = tables[i];
 				String subCreate = "CREATE TABLE " + table + "( ";
-				List<Column> cols = menu.getTableCols(table); //assume they'll say id
+				List<Column> cols = menu.getTableCols(table, allColumns); //assume they'll say id
 				Map<Column, String> sampleVals = rows.get(0).getValues();
 				for (Column col : cols) {
 					try {
@@ -274,7 +281,7 @@ public class Generator {
 	 * writes generated data to database
 	 * @param rows		all rows generated
 	 */
-	public static void write(List<Individual> rows) {
+	public static void write(List<Individual> rows, List<Column> allColumns) {
 		Connection c = null;
 		PreparedStatement stmt = null;
 		try {
@@ -282,7 +289,7 @@ public class Generator {
 			c = DriverManager.getConnection("jdbc:postgresql://localhost:5432/microsim", "postgres", "microsim2016");
 			c.setAutoCommit(false);
 			
-			String create = "CREATE TABLE TOTAL("; //but don't want to recreate now so comment out or drop in cl
+			String create = "CREATE TABLE TOTAL(";
 			Map<Column, String> values = rows.get(0).getValues();
 			for (Column col : values.keySet()) {
 				Source s = col.source;
@@ -295,7 +302,7 @@ public class Generator {
 					}
 				}
 			}
-			create = create + " PRIMARY KEY (id));";
+			create = create + " PRIMARY KEY (id));"; 
 			System.out.println("create: " + create); //check
 			stmt = c.prepareStatement(create);			
 			stmt.executeUpdate();
@@ -322,7 +329,7 @@ public class Generator {
 				stmt.executeUpdate();			
 			}
 			stmt.close();
-			subTables(rows, c);
+			subTables(rows, c, allColumns);
 		} catch(Exception e) {
 			e.printStackTrace();
 	         System.err.println(e.getClass().getName() + ": " + e.getMessage());
