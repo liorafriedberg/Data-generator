@@ -26,14 +26,14 @@ public class Generator {
 		List<Individual> rows = generate(allColumns);
 		long second = System.currentTimeMillis();
 		for (Individual i : rows) { //to test
-			Map<Column, String> values = i.getValues();
 			System.out.println("");
+			Map<Column, String> values = i.getValues();
 			for (Column c : values.keySet()) { //can we assume values.keySet same iteration per person every time?
 				System.out.print(c.datatype + ": " + values.get(c) + " ");
 			}
 			Map<String, String> map = i.mvTwo; //del - and change menu back
 			for (String s : map.keySet()) {
-				System.out.println("disease: " + s + " ps: " + map.get(s));
+				System.out.print("disease: " + s + " ps: " + map.get(s));
 			}
 		}
 		//now have rows to put in database!
@@ -178,14 +178,12 @@ public class Generator {
 								", " + mv2.datatype + " " + mv2Type + ");"; //so matches
 						//order below
 
-				System.out.println("addCreate: " + addCreate);
 				stmt = c.prepareStatement(addCreate);
 				stmt.executeUpdate();			
 				String all = "";
 				String some = "";
 				String none = "";
 				for (Column colTwo : newTableCols) {
-					System.out.println("in loop: col: " + colTwo.datatype);
 					Source s = menu.getSource(colTwo);
 					if (!s.equals(Source.MULTI_VALUE) && !s.equals(Source.MULTI_VALUE_2)) {
 						none = none + colTwo.datatype + ",";
@@ -229,7 +227,6 @@ public class Generator {
 							} catch(NumberFormatException e) {
 								addInsert = addInsert + "'" + parts[l] + "');";
 							}
-							System.out.println("addInsert: " + addInsert);
 							stmt = c.prepareStatement(addInsert);
 							stmt.executeUpdate();	
 						}
@@ -254,7 +251,6 @@ public class Generator {
 							} catch(NumberFormatException e) {
 								addInsert = addInsert + "'" + mvS + "');";
 							}						
-							System.out.println("addInsert: " + addInsert);
 							stmt = c.prepareStatement(addInsert);
 							stmt.executeUpdate();
 						}
@@ -275,7 +271,6 @@ public class Generator {
 							}
 						}
 						addInsert = addInsert.substring(0, addInsert.length() - 2) + ");";
-						System.out.println("addInsert: " + addInsert);
 						stmt = c.prepareStatement(addInsert);
 						stmt.executeUpdate();
 					}
@@ -342,7 +337,6 @@ public class Generator {
 				}
 				subCreate = subCreate.substring(0, subCreate.length() - 2) + ");";
 					//don't need primary or foreign keys in these tables
-				System.out.println("sub: " + subCreate);
 				stmt = c.prepareStatement(subCreate);
 				stmt.executeUpdate();	
 			
