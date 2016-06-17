@@ -7,8 +7,16 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
+/**
+ * Generates individual-level data of dates from year ranges
+ * @author liorafriedberg
+ */
 public class DepDateSim implements Simulator {
 
+	/* 
+	 * (non-Javadoc)
+	 * @see cmu.reuse.liora.generate.Simulator#simulate(cmu.reuse.liora.generate.Menu, cmu.reuse.liora.generate.Column, java.util.List, java.util.List)
+	 */
 	@Override
 	public void simulate(Menu menu, Column column, List<Individual> people, List<Column> cols) {
 
