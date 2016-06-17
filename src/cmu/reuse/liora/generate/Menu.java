@@ -66,6 +66,7 @@ public class Menu {
 	}
 	
 	public Column getDepColumn(List<Column> columns, Column c) {
+		System.out.println("Please enter dependency column");
 		return getColumn(columns);
 	}
 	
@@ -430,9 +431,10 @@ public class Menu {
 	
 	/**
 	 * @param table		the table name
+	 * @param allColumns 
 	 * @return			the columns for the table
 	 */
-	public List<Column> getTableCols(String table) {
+	public List<Column> getTableCols(String table, List<Column> allColumns) {
 		System.out.println("Please input a list of all columns for table " + table + ", comma separated.");
 		boolean wait = true;
 		String input = null;
@@ -443,8 +445,13 @@ public class Menu {
 				wait = false;
 				String[] parts = input.split(",");
 				for (int i = 0; i < parts.length; i++) {
-					Column col = new Column(parts[i]); //add check for mistake
-					cols.add(col);
+					String part = parts[i];
+					for (Column c : allColumns) {
+						if (c.datatype.equals(part)) {
+							cols.add(c);
+							break;
+						}
+					}
 				}
 			}
 		}
