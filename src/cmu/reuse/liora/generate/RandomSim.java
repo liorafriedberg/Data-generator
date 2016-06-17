@@ -5,8 +5,15 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
+/**
+ * generates random individual-level data
+ * @author liorafriedberg
+ */
 public class RandomSim implements Simulator {
 
+	/* (non-Javadoc)
+	 * @see cmu.reuse.liora.generate.Simulator#simulate(cmu.reuse.liora.generate.Menu, cmu.reuse.liora.generate.Column, java.util.List, java.util.List)
+	 */
 	@Override
 	public void simulate(Menu menu, Column column, List<Individual> people, List<Column> allColumns) {
 		Source randSource = menu.getRandom(column);
