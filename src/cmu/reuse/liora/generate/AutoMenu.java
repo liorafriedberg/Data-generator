@@ -69,7 +69,6 @@ public class AutoMenu extends Menu {
 	@Override
 	public Column getValueColumn(List<Column> columns, Column c) {
 		String val = prop.getProperty(c.datatype + "ValueColumn");
-	System.out.println("key: " + c.datatype + "ValueColumn to " + val);
 		Column valColumn = null;
 		for (Column column : columns) {
 			if (column.datatype.equals(val)) {
