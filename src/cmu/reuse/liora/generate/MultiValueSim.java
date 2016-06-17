@@ -6,8 +6,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * generates individual-level data for columns that can have multiple values
+ * @author liorafriedberg
+ */
 public class MultiValueSim implements Simulator {
 
+	/* (non-Javadoc)
+	 * @see cmu.reuse.liora.generate.Simulator#simulate(cmu.reuse.liora.generate.Menu, cmu.reuse.liora.generate.Column, java.util.List, java.util.List)
+	 */
 	@Override
 	public void simulate(Menu menu, Column column, List<Individual> people, List<Column> allColumns) {
 		File file = menu.getFile(column);
