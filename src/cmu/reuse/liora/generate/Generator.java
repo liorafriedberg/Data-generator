@@ -10,7 +10,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Generates synthetic individual-level data from aggregate data
+ * Generates synthetic individual-level data from aggregate data and automated user input and writes it to
+ * the database
  * @author liorafriedberg
  */
 
@@ -43,9 +44,11 @@ public class Generator {
 		
 	}
 
+
 	/**
-	 * @return		the generated individual data
-	 * @throws IOException 
+	 * @param allColumns	all possible columns
+	 * @return				the generated individual data
+	 * @throws IOException
 	 */
 	public static List<Individual> generate(List<Column> allColumns) throws IOException {		
 		Menu menu = new AutoMenu(); //AutoMenu to automate
@@ -124,6 +127,7 @@ public class Generator {
 	 * @param rows		rows generated
 	 * @param c			connection to db
 	 * @param tables	all new tables in db
+	 * @param allColumns	all possible columns
 	 * @throws IOException 
 	 */
 	public static void addDbCols(List<Individual> rows, Connection c, String[] tables, List<Column> allColumns) throws IOException {
@@ -291,6 +295,13 @@ public class Generator {
 		}		
 	}	
 	
+	/**
+	 * @param i			the person
+	 * @param table		the current db table
+	 * @param cols		all columns
+	 * @return			the insert sql statement
+	 * @throws IOException
+	 */
 	public static String writeIndividual(Individual i, String table, List<Column> cols) throws IOException {
 		Menu menu = new AutoMenu();
 		String insert = "INSERT INTO " + table + " VALUES( ";
@@ -315,6 +326,7 @@ public class Generator {
 	 * writes new tables to break up total data in db
 	 * @param rows		the data generated
 	 * @param c			Connection to db
+	 * @param allColumns	all possible columns
 	 * @throws IOException 
 	 */
 	public static void subTables(List<Individual> rows, Connection c, List<Column> allColumns) throws IOException {
@@ -359,10 +371,11 @@ public class Generator {
 			}				
 	} 			
 
-	//may extract as own class
+	//may extract db writer as own class
 	/**
 	 * writes generated data to database
 	 * @param rows		all rows generated
+	 * @param allColumns	all possible columns
 	 */
 	public static void write(List<Individual> rows, List<Column> allColumns) {
 		Connection c = null;
