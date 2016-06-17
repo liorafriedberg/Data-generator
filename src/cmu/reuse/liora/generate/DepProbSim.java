@@ -8,6 +8,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * generates individual-level data from a probability distribution that depends on previous values
+ * @author liorafriedberg
+ */
 public class DepProbSim implements Simulator {
 	 
 	@Override
