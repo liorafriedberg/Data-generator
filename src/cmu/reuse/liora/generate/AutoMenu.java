@@ -102,6 +102,21 @@ public class AutoMenu extends Menu {
 		return depColumn;
 	}
 	
+	public Column getMvColumn(List<Column> columns) { //need?
+		String mv = prop.getProperty("MvColumn");
+		Column mvColumn = null;
+		for (Column column : columns) {
+			if (column.datatype.equals(mv)) {
+				mvColumn = column;
+				break;
+			}
+		}
+		if (mvColumn == null) {
+			throw new IllegalArgumentException("Invalid mv2 column in input");
+		}
+		return mvColumn;
+	}
+	
 	
 	/* (non-Javadoc)
 	 * @see cmu.reuse.liora.generate.Menu#getFinalColumns(java.util.List)
@@ -159,14 +174,6 @@ public class AutoMenu extends Menu {
 		} catch(NumberFormatException e) {
 			throw new IllegalArgumentException("Invalid bound in input");
 		}
-	}
-	
-	/* (non-Javadoc)
-	 * @see cmu.reuse.liora.generate.Menu#getChoice(java.lang.String)
-	 */
-	@Override
-	public boolean getChoice(String table) { //notnow
-		return false;
 	}
 	
 	/* (non-Javadoc)
@@ -353,6 +360,15 @@ public class AutoMenu extends Menu {
 	}
 	
 	/* (non-Javadoc)
+	 * @see cmu.reuse.liora.generate.Menu#getMvTables(java.lang.String)
+	 */
+	@Override
+	public String[] getMvTables(String table) {
+		String mvTables = prop.getProperty(table + "MvTables");
+		return mvTables.split(",");
+	}
+	
+	/* (non-Javadoc)
 	 * @see cmu.reuse.liora.generate.Menu#getTableCols(java.lang.String)
 	 */
 	@Override
@@ -376,8 +392,8 @@ public class AutoMenu extends Menu {
 	 * @see cmu.reuse.liora.generate.Menu#getProbability()
 	 */
 	@Override
-	public double getProbability() {
-		String prob = prop.getProperty("presenceProb");
+	public double getProbability(String table) {
+		String prob = prop.getProperty(table + "PresenceProb");
 		try {
 			double num = Double.parseDouble(prob);
 			if (num < 0 || num > 1) {
@@ -396,4 +412,21 @@ public class AutoMenu extends Menu {
 	public void close() throws IOException {
 		in.close();
 	}
+	
+	/* (non-Javadoc)
+	 * @see cmu.reuse.liora.generate.Menu#getChoice(java.lang.String)
+	 */
+	@Override
+	public boolean getChoice(String table) {
+		String answer = prop.getProperty(table + "Choice");
+		if (answer.equals("yes")) {
+			return true;
+		}
+		else if (answer.equals("no")) {
+			return false;
+		} else {
+			throw new IllegalArgumentException("Invalid choice in input");
+		}
+	}
+
 }
