@@ -11,9 +11,16 @@ import java.util.Map;
  */
 public class Individual {
 	
+	/**
+	 * column to value for columns that strictly have one value (or a concatenated string)
+	 */
 	private Map<Column, String> values;
 	
-	Map<String, String> mvTwo; //e.g. cancer-chemo,rad     ,  pain-tylenol,ibf
+	/**
+	 * for multi-value columns beyond depth 1 - map from one value to a corresponding value
+	 * e.g. disease(a) to prescription(1), disease(a) to prescription(2), disease(b) to ...
+	 */
+	Map<String, String> mvTwo;
 	
 	Individual() {
 		values = new HashMap<>();
