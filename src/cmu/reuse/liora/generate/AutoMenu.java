@@ -12,12 +12,18 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * extension of menu for automated user input to facilitate testing
+ * extension of menu for automated user input from configuration file
  * @author liorafriedberg
  */
 public class AutoMenu extends Menu {
+
+	/**
+	 * get automated input
+	 */
 	Properties prop;
 	FileInputStream in;
+	
+	
 	public AutoMenu() throws IOException {		
 		prop = new Properties();
 		in = new FileInputStream("config.properties");
@@ -99,21 +105,6 @@ public class AutoMenu extends Menu {
 			throw new IllegalArgumentException("Invalid dependency column in input");
 		}
 		return depColumn;
-	}
-	
-	public Column getMvColumn(List<Column> columns) { //need?
-		String mv = prop.getProperty("MvColumn");
-		Column mvColumn = null;
-		for (Column column : columns) {
-			if (column.datatype.equals(mv)) {
-				mvColumn = column;
-				break;
-			}
-		}
-		if (mvColumn == null) {
-			throw new IllegalArgumentException("Invalid mv2 column in input");
-		}
-		return mvColumn;
 	}
 	
 	
