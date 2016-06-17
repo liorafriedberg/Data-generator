@@ -38,7 +38,7 @@ public class MultiValueTwoSim implements Simulator {
 				currentDepVals.put(d, currentValues.get(d));
 				}
 			}	
-				
+			if (mvStr.length() > 0) {
 			String[] parts = mvStr.split(",");
 			
 			for (int i = 0; i < parts.length; i++) { //for every disease						
@@ -61,6 +61,7 @@ public class MultiValueTwoSim implements Simulator {
 				}	
 				person.mvTwo.put(parts[i], twoVals); //disease to all the prescriptions
 			}
+		}
 		}				
 		reader.close();
 	}
