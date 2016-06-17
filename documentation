@@ -1,5 +1,5 @@
 General information:
-System has a number of csv files (project-level directory) containing probabilities of an individual having 
+System has a number of csv files containing probabilities of an individual having 
 different types of attributes, compiled from real-world aggregate census data. User can make a configuration 
 file to their specifications (guidelines in config.properties file). Generates synthetic individual-level data 
 for any given number of individuals from the aggregate data and automated input from the config file, using 
