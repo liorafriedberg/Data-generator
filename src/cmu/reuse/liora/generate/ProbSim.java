@@ -28,9 +28,10 @@ public class ProbSim implements Simulator {
 		}
 		else { //== 2
 			reader.parseFreqs(valColumn, probColumn);
-		}				
+		}		
+		List<Double> cumus = reader.binaryHelper();
 		for (Individual person : people) {
-			person.setValue(column, reader.calculate());
+			person.setValue(column, reader.calculateBinary(cumus));
 		}
 		reader.close();
 	}
