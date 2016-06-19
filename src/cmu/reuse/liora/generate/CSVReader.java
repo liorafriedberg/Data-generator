@@ -3,6 +3,7 @@ package cmu.reuse.liora.generate;
 import java.io.File;
 import java.util.concurrent.ThreadLocalRandom;
 import java.io.FileNotFoundException;
+import java.nio.file.SecureDirectoryStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -37,6 +38,8 @@ public class CSVReader {
 	 */
 	Map<Column, Integer> indices;
 	
+	Map<Double, String> store;
+	
 	/**
 	 * @param file		CSV file with agg data
 	 */
@@ -49,6 +52,7 @@ public class CSVReader {
 		probabilities = new HashMap<>();
 		bounds = new HashMap<>();
 		indices = new HashMap<>();
+		store = new HashMap<>(); //<cumprob,string>	
 		header = getColumns();	
 	}
 	
@@ -244,6 +248,51 @@ public class CSVReader {
 		return null;
 	}
 	
+	public List<Double> binaryHelper() {				
+		Double total = 0.0;
+		for (String s : probabilities.keySet()) { //Don't sort when adding up but I think that's okay
+			total = total + probabilities.get(s);
+			store.put(total, s);
+			System.out.println("s: " + s + "double: " + total);
+		}
+		List<Double> cumus = new ArrayList<>();
+		cumus.addAll(store.keySet());
+		Collections.sort(cumus); 
+		return cumus;
+	}
+	
+	public String calculateBinary(List<Double> cumus) {
+		Double[] cumusA = new Double[cumus.size()];
+		cumusA = cumus.toArray(cumusA);		
+		Double random = Math.random();
+		System.out.println("random: " + random);
+		int min = 0;
+		int max = cumusA.length - 1;	
+		double key = 0.0;	
+		while (min < max) {		
+		int guess = (int) ((max + min) / 2.0);
+		Double d = cumusA[guess];		
+		if (d == random) {
+			System.out.println("exact");
+			key = d; 
+		} else if (d < random) { 
+			min = guess + 1;
+		} else {
+			max = guess;
+		} //found closest but higher but i think that's okay
+		}
+		if (key == 0.0) {
+			if (cumusA[min] < random) {
+			key = cumusA[min + 1];
+			} 
+			else {
+			key = cumusA[min];
+			}
+		}
+		System.out.println("totalmatch: " + key);
+		return store.get(key);
+	}
+	
 	/**
 	 * @return		all values for the datatype concatenated and comma separated
 	 */
@@ -279,6 +328,7 @@ public class CSVReader {
 			secondaryMap.put(upperBound, upperBound + d); //range for random number to corresp to this value
 			upperBound = upperBound + d; //update to prep for next range			
 			bounds.put(s, secondaryMap);
+			
 		}
 		Map<Double, Double> secondaryMap = bounds.get(lastStr);
 		for (Double d : secondaryMap.keySet()) {
