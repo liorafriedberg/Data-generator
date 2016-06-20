@@ -40,6 +40,8 @@ public class CSVReader {
 	
 	Map<Double, String> store;
 	
+	List<Double> cumus;
+	
 	/**
 	 * @param file		CSV file with agg data
 	 */
@@ -53,6 +55,7 @@ public class CSVReader {
 		bounds = new HashMap<>();
 		indices = new HashMap<>();
 		store = new HashMap<>(); //<cumprob,string>	
+		cumus = new ArrayList<>();
 		header = getColumns();	
 	}
 	
@@ -248,24 +251,22 @@ public class CSVReader {
 		return null;
 	}
 	
-	public List<Double> binaryHelper() {				
+	public void binaryHelper() {				
 		Double total = 0.0;
 		for (String s : probabilities.keySet()) { //Don't sort when adding up but I think that's okay
 			total = total + probabilities.get(s);
 			store.put(total, s);
-			System.out.println("s: " + s + "double: " + total);
+			//System.out.println("s: " + s + "double: " + total);
 		}
-		List<Double> cumus = new ArrayList<>();
 		cumus.addAll(store.keySet());
 		Collections.sort(cumus); 
-		return cumus;
 	}
 	
-	public String calculateBinary(List<Double> cumus) {
+	public String calculateBinary() {
 		Double[] cumusA = new Double[cumus.size()];
 		cumusA = cumus.toArray(cumusA);		
 		Double random = Math.random();
-		System.out.println("random: " + random);
+		//System.out.println("random: " + random);
 		int min = 0;
 		int max = cumusA.length - 1;	
 		double key = 0.0;	
@@ -273,13 +274,13 @@ public class CSVReader {
 		int guess = (int) ((max + min) / 2.0);
 		Double d = cumusA[guess];		
 		if (d == random) {
-			System.out.println("exact");
+		//	System.out.println("exact");
 			key = d; 
 		} else if (d < random) { 
 			min = guess + 1;
 		} else {
 			max = guess;
-		} //found closest but higher but i think that's okay
+		} //found closest but higher but I think that's okay
 		}
 		if (key == 0.0) {
 			if (cumusA[min] < random) {
@@ -289,7 +290,7 @@ public class CSVReader {
 			key = cumusA[min];
 			}
 		}
-		System.out.println("totalmatch: " + key);
+		//System.out.println("totalmatch: " + key);
 		return store.get(key);
 	}
 	
