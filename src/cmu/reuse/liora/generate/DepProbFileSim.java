@@ -39,13 +39,15 @@ public class DepProbFileSim implements Simulator {
 			} else {
 				reader.parseFreqs(valColumn, probColumn);
 			}
+			reader.binaryHelper();
 			fileToReader.put(f, reader);			
 		}		
 		for (Individual person : people) {
 			String currValue = person.getValues().get(depColumn);
 			File file = valueToFile.get(currValue); 
 			CSVReader reader = fileToReader.get(file); 
-			person.setValue(column, reader.calculate());
+		
+			person.setValue(column, reader.calculateBinary());
 		}
 		for (CSVReader r : fileToReader.values()) {
 			r.close();
