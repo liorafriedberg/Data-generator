@@ -27,14 +27,13 @@ public class Generator {
 		List<Individual> rows = generate(allColumns);
 		long second = System.currentTimeMillis();
 		for (Individual i : rows) { //to test
-			System.out.println("");
 			Map<Column, String> values = i.getValues();
 			for (Column c : values.keySet()) { //can we assume values.keySet same iteration per person every time?
 				System.out.print(c.datatype + ": " + values.get(c) + " ");
 			}
 			Map<String, String> map = i.mvTwo; //del - and change menu back
 			for (String s : map.keySet()) {
-				System.out.print("disease: " + s + " ps: " + map.get(s));
+				System.out.print("disease: " + s + " ps: " + map.get(s)+"\n");
 			}
 		}
 		//now have rows to put in database!
