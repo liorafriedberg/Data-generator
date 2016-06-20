@@ -21,8 +21,7 @@ public class ProbSim implements Simulator {
 		System.out.println("Please enter the name of the column with the possible values.");	
 		Column valColumn = menu.getValueColumn(reader.header, column);
 		//value column is column, probColumn is frequency column
-		int format = menu.getDataFormat(column); //1 is percentage 2 is freq
-		
+		int format = menu.getDataFormat(column); //1 is percentage 2 is freq		
 		if (format == 1) {
 			reader.parseProbs(valColumn, probColumn);
 		}
