@@ -7,8 +7,69 @@ different approaches depending on the data file - probability distributions, ran
 This data is written to the database, with an individual represented in a row, and the attributes corresponding 
 to the database fields.
 
-Data generation process for each column:
+Technical documentation:
+Menu: Two options for user input. Menu class functions return dynamic user input, so that as the program runs the user
+enters into the console
+filenames, column names, etc to complete the generation. The Menu class extension AutoMenu has functions that return 
+input from a configuration file, allowing the user to set up a file ahead of time per the specifics
+of the data they wish to generate, for a number of benefits. Automated input avoid mistakes that might force the user to 
+restart, speeds up the general process, and allows the user to run the same generation many times without constant involvement.
 
+Generator flow: The overall generator goes through each column requested and determines the 
+source for the column's data - probability distribution, random line, static dependent value etc. By looping through the
+columns, we can assign all individual values for each datatype at once, with no need to revisit set-up processes for 
+calculations multiple times. Based on the source, it then simulates the individuals with a specific simulator. Each 
+simulator takes in its own needed input from the configuration file and performs calculations specific to its approach. 
+Each then generates a value for the column at hand for every individual.
+
+Probability calculations: There are multiple different sources which use probability calculations, but the overall
+approach is constant throughout. We identify the file/row/column with the probabilities and then the row/column
+with the potential values. We store each value to its probability in a HashMap. If we are dealing with frequencies
+instead of percentages, we first store the frequencies in the map, and then go through and divide each frequency by 
+total frequency to obtain the percentage.
+One approach is to then bound the data, so each value is mapped to a range between 0 and 1 based on its
+probability. Then a random number between 0 and 1 is generated, and whichever range the random number falls into 
+indicates the corresponding value. 
+Another approach is to store each value to its cumulative probability in a map. So the first 
+value maps to its probability, and the last value maps to 1. Then we generate a random number between 0 and 1 and
+go through the cumulative probabilities with a binary search to find the cumulative probability above or equal to the 
+random number, and assign the corresponding value.
+
+Writing to the database:
+We use SQL and the postgres database to store our generated individuals. By moving appropriately through the 
+columns and individuals, we can create dynamic SQL queries to create tables from the column names and populate the tables 
+with specific individual-level values for each field. We can then further break tables up into new tables and add new 
+multi-value data.
+
+Column: Each Column object stores its "datatype" (String), referring to the column name, which becomes its identifier. Each 
+also stores its Source and potentially a user-friendly label.
+
+Individual: Every individual stores their specific field values in a HashMap from Column to String for easy 
+lookup, which is needed during dependent value searches and database population. Currently, individuals also store a String
+to String map for multi-value to multi-value mappings.
+
+Source: Sources are stored as enums, as every source must be exactly one of 12 options (the 13th Source is Random which
+is then refined into a more specific random source).
+
+Simulator: Simulator is an interface that simulates the individuals (ie actually assigns the values) using the menu, 
+the current column, and the lists of total
+people and total columns. All the source-specific simulators implement this interface, as they all play the same
+role in the generation process, use the same input, and have the same effect. They all are called from generator and then
+simply go about the technical specifics differently.
+
+Files: We chose to store our aggregate data in CSV files, as it makes parsing the header column names and specific file
+values straightforward. As a general strategy we can split each line on commas and identify values
+by index.
+
+Optimization: We were able to optimize the code so that generating 100,000 individuals for all fields and subsequently
+storing them in the database takes approximately two minutes. We used multiple strategies to bring down this 
+runtime. For our dependency calculations, probability-based and static alike, we go through each line in a file once, and store
+the appropriate dependencies to the appropriate probabilities/values, so that for all individuals, much of the
+work is a simple look up. The user-input automation also sped up practical runtime significantly. Lastly,
+when searching within a large probability distribution to match the random number, we used binary search to
+speed up the time to find the corresponding number and subsequent value to assign.
+
+Data generation process for each column:
 insurance_member_id: UUID
 
 grocery_member_id: UUID
