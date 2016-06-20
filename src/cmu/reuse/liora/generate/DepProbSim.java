@@ -57,7 +57,7 @@ public class DepProbSim implements Simulator {
 			} 
 			else { //== 2
 				personReader.parseFreqsDep(pVals);
-			}														
+			}			
 			person.setValue(column, personReader.calculate());
 			personReader.close();
 		}
