@@ -253,10 +253,9 @@ public class CSVReader {
 	
 	public void binaryHelper() {				
 		Double total = 0.0;
-		for (String s : probabilities.keySet()) { //Don't sort when adding up but I think that's okay
+		for (String s : probabilities.keySet()) {
 			total = total + probabilities.get(s);
 			store.put(total, s);
-			//System.out.println("s: " + s + "double: " + total);
 		}
 		cumus.addAll(store.keySet());
 		Collections.sort(cumus); 
@@ -266,7 +265,6 @@ public class CSVReader {
 		Double[] cumusA = new Double[cumus.size()];
 		cumusA = cumus.toArray(cumusA);		
 		Double random = Math.random();
-		//System.out.println("random: " + random);
 		int min = 0;
 		int max = cumusA.length - 1;	
 		double key = 0.0;	
@@ -274,13 +272,12 @@ public class CSVReader {
 		int guess = (int) ((max + min) / 2.0);
 		Double d = cumusA[guess];		
 		if (d == random) {
-		//	System.out.println("exact");
 			key = d; 
 		} else if (d < random) { 
 			min = guess + 1;
 		} else {
 			max = guess;
-		} //found closest but higher but I think that's okay
+		}
 		}
 		if (key == 0.0) {
 			if (cumusA[min] < random) {
@@ -290,7 +287,6 @@ public class CSVReader {
 			key = cumusA[min];
 			}
 		}
-		//System.out.println("totalmatch: " + key);
 		return store.get(key);
 	}
 	
