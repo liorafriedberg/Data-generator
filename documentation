@@ -29,11 +29,16 @@ instead of percentages, we first store the frequencies in the map, and then go t
 total frequency to obtain the percentage.
 One approach is to then bound the data, so each value is mapped to a range between 0 and 1 based on its
 probability. Then a random number between 0 and 1 is generated, and whichever range the random number falls into 
-indicates the corresponding value. 
+indicates the corresponding value. This approach is valid. For example, a value with probability .3 should be assigned 30%
+of the time. The value will map to a range of width .3, say, 0.24 to 0.54. The random number between 0 and 1 will fall 
+within this range exactly 30% of the time, and thus the value will be assigned 30% of the time.
 Another approach is to store each value to its cumulative probability in a map. So the first 
 value maps to its probability, and the last value maps to 1. Then we generate a random number between 0 and 1 and
 go through the cumulative probabilities with a binary search to find the cumulative probability above or equal to the 
-random number, and assign the corresponding value.
+random number, and assign the corresponding value. This approach is valid, as it is conceptually based off the first 
+approach. We are looking for the first cumulative number just higher or equal to the random
+number. The only difference here is that instead of identifying explicitly the range into which the random number 
+falls, we are essentially identifying the upper bound of that range, which still indicates the same value. 
 
 Writing to the database:
 We use SQL and the postgres database to store our generated individuals. By moving appropriately through the 
