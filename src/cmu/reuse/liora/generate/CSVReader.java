@@ -319,7 +319,7 @@ public class CSVReader {
 	/**
 	 * set ranges on the data values for the dice roll
 	 */
-	public void bound() {
+	public void bound() { //even need?
 		double upperBound = 0.0;
 		String lastStr = null;
 		for (String s : probabilities.keySet()) {
