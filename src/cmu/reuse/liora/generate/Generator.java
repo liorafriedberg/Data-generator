@@ -40,7 +40,7 @@ public class Generator {
 		//now have rows to put in database!
 		long finalTime = second - first;
 		System.out.println("final time in millis: " + finalTime);
-	write(rows, allColumns);
+		write(rows, allColumns); 
 		
 	}
 
