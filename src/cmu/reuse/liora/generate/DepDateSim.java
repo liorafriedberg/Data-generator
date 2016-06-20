@@ -34,8 +34,9 @@ public class DepDateSim implements Simulator {
 		else { //== 2
 			reader.parseFreqs(valColumn, probColumn);
 		}
+		reader.binaryHelper();
 		for (Individual person : people) {
-			String range = reader.calculate();
+			String range = reader.calculateBinary(); //added here
 			String[] ends = range.split("-"); //get range
 			int start = Integer.parseInt(ends[0]);
 			int end = Integer.parseInt(ends[1]);	
