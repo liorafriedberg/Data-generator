@@ -254,16 +254,19 @@ public class CSVReader {
 	public void binaryHelper() {				
 		Double total = 0.0;
 		for (String s : probabilities.keySet()) {
-			total = total + probabilities.get(s);
-			store.put(total, s);
-		}
+			Double prob = probabilities.get(s);
+			if (prob > 0) {
+			total = total + prob;
+			store.put(total, s); 
+			}
+		}	
 		cumus.addAll(store.keySet());
 		Collections.sort(cumus); 
 	}
 	
 	public String calculateBinary() {
 		Double[] cumusA = new Double[cumus.size()];
-		cumusA = cumus.toArray(cumusA);		
+		cumusA = cumus.toArray(cumusA);	
 		Double random = Math.random();
 		int min = 0;
 		int max = cumusA.length - 1;	
@@ -324,8 +327,7 @@ public class CSVReader {
 			lastStr = s;
 			secondaryMap.put(upperBound, upperBound + d); //range for random number to corresp to this value
 			upperBound = upperBound + d; //update to prep for next range			
-			bounds.put(s, secondaryMap);
-			
+			bounds.put(s, secondaryMap);			
 		}
 		Map<Double, Double> secondaryMap = bounds.get(lastStr);
 		for (Double d : secondaryMap.keySet()) {
